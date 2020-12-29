@@ -5,6 +5,8 @@ import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:student_services/widgets/custom_text.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -54,9 +56,10 @@ class _SignUpState extends State<SignUp> {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'Sign Up',
-                          style: authText,
+                        MyText(
+                          text: 'Sign Up',
+                          size: 28,
+                          weight: FontWeight.bold,
                         ),
                       ],
                     ),
@@ -75,6 +78,14 @@ class _SignUpState extends State<SignUp> {
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
                                   decoration: textFormDecoration('First Name'),
+                                  validator: (value) {
+                                    return value.length > 0
+                                        ? null
+                                        : 'First name is empty';
+                                  },
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(20),
+                                  ],
                                 ),
                               )),
                               Expanded(
@@ -85,6 +96,14 @@ class _SignUpState extends State<SignUp> {
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
                                   decoration: textFormDecoration('Last Name'),
+                                  validator: (value) {
+                                    return value.length > 0
+                                        ? null
+                                        : 'Last name is empty';
+                                  },
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(20),
+                                  ],
                                 ),
                               )),
                             ],
@@ -96,10 +115,15 @@ class _SignUpState extends State<SignUp> {
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               decoration: textFormDecoration('Email'),
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(40),
+                              ],
                               validator: (value) {
-                                return value.length > 3
+                                return RegExp(
+                                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                        .hasMatch(value)
                                     ? null
-                                    : 'Please provide email 3+ character';
+                                    : 'Please provide a valid email';
                               },
                             ),
                           ),
@@ -110,6 +134,14 @@ class _SignUpState extends State<SignUp> {
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                               decoration: textFormDecoration('Mobile Phone'),
+                              validator: (value) {
+                                return value.length > 10
+                                    ? null
+                                    : 'Please provid 11 numbers';
+                              },
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(11),
+                              ],
                             ),
                           ),
                           TextFormField(
@@ -118,10 +150,13 @@ class _SignUpState extends State<SignUp> {
                             obscureText: true,
                             textInputAction: TextInputAction.done,
                             decoration: textFormDecoration('Password'),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(40),
+                            ],
                             validator: (value) {
-                              return value.length > 3
+                              return value.length > 4
                                   ? null
-                                  : 'Please provide email 3+ character';
+                                  : 'Please provide password 4+ character';
                             },
                           ),
                         ],
@@ -138,13 +173,9 @@ class _SignUpState extends State<SignUp> {
                         height: 50,
                         width: double.infinity,
                         child: RaisedButton(
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              letterSpacing: 1,
-                            ),
+                          child: MyText(
+                            text: 'Sign Up',
+                            color: Colors.white,
                           ),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
@@ -157,10 +188,9 @@ class _SignUpState extends State<SignUp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Already have account? ',
-                          style:
-                              TextStyle(color: Colors.grey[700], fontSize: 16),
+                        MyText(
+                          text: 'Already have account? ',
+                          color: Colors.grey[700],
                         ),
                         GestureDetector(
                           onTap: () {
@@ -216,27 +246,17 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-  // Future<void> _userSetup(
-  //     String userFirstName, String userLastName, String userPhone) async {
-  //   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  //   String uid = _auth.currentUser.uid.toString();
-  //   users.add({
-  //     'userFirstName': userFirstName,
-  //     'userLastName': userLastName,
-  //     'userPhone': userPhone,
-  //     'uid': uid
-  //   });
-  //   return;
-  // }
-
   Future saveUserInfoToFireStore(User fUser) async {
-    FirebaseFirestore.instance.collection('users').doc(fUser.uid).set({
+    StudentServicesApp.firebaseFirestore
+        .collection('users')
+        .doc(fUser.uid)
+        .set({
       'uid': fUser.uid,
       'email': fUser.email,
-      'name': _userFirstNameController.text,
+      'firstname': _userFirstNameController.text,
       'lastName': _userLastNameController.text,
-      'userPhone': _userPhoneController.text,
-      'userAccess': 'user',
+      'phone': _userPhoneController.text,
+      'admin': false,
       'url': 'fUser.photoURL',
     });
     await StudentServicesApp.sharedPreferences

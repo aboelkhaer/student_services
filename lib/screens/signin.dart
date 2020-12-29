@@ -5,6 +5,7 @@ import 'package:student_services/screens/home_screen.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
+import 'package:student_services/widgets/custom_text.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -46,9 +47,10 @@ class _SignInState extends State<SignIn> {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'Sign In',
-                          style: authText,
+                        MyText(
+                          text: 'Sign In',
+                          size: 28,
+                          weight: FontWeight.bold,
                         ),
                       ],
                     ),
@@ -93,11 +95,10 @@ class _SignInState extends State<SignIn> {
                         ),
                         child: GestureDetector(
                           onTap: () {},
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                            ),
+                          child: MyText(
+                            text: 'Forgot Password?',
+                            color: Colors.grey[700],
+                            size: 14,
                           ),
                         ),
                       ),
@@ -113,14 +114,18 @@ class _SignInState extends State<SignIn> {
                         height: 50,
                         width: double.infinity,
                         child: RaisedButton(
-                          child: Text(
-                            'Sign In',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              letterSpacing: 1,
-                            ),
+                          child: MyText(
+                            text: 'Sign In',
+                            color: Colors.white,
                           ),
+                          // Text(
+                          //   'Sign In',
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 16,
+                          //     letterSpacing: 1,
+                          //   ),
+                          // ),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               _signInEmailPassword();
@@ -132,10 +137,10 @@ class _SignInState extends State<SignIn> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Don\'t have account? ',
-                          style:
-                              TextStyle(color: Colors.grey[700], fontSize: 16),
+                        MyText(
+                          text: 'Don\'t have account? ',
+                          color: Colors.grey[700],
+                          size: 14,
                         ),
                         GestureDetector(
                           onTap: () {
@@ -169,9 +174,9 @@ class _SignInState extends State<SignIn> {
                   email: _userEmailController.text.trim(),
                   password: _userPasswordController.text.trim()))
           .user;
-      if (!StudentServicesApp.user.emailVerified) {
-        await StudentServicesApp.user.sendEmailVerification();
-      }
+      // if (!StudentServicesApp.user.emailVerified) {
+      //   await StudentServicesApp.user.sendEmailVerification();
+      // }
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
         return HomeScreen(user: StudentServicesApp.user);
       }));

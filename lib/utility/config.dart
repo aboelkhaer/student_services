@@ -8,10 +8,11 @@ class StudentServicesApp {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  static final String userFirstName = 'userFirstName';
+  static final String userFirstName = 'firstName';
   static final String userUID = 'uid';
-  static final String userLastName = 'userLastName';
-  static final String userPhone = 'userPhone';
+  static final String userLastName = 'lastName';
+  static final String userAdmin = 'admin';
+  static final String userPhone = 'phone';
   static final String userEmail = 'email';
   static final String userPhotoUrl = 'url';
 }

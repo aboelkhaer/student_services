@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:page_view_indicator/page_view_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_services/screens/signin.dart';
-import 'package:student_services/model.dart/welcom_page_model.dart';
+import 'package:student_services/models/welcom_page_model.dart';
 import 'package:student_services/utility/constans.dart';
+import 'package:student_services/widgets/custom_text.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -45,11 +46,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     _addPages();
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        brightness: Brightness.light,
-      ),
       body: Stack(
         children: [
           PageView.builder(
@@ -70,14 +66,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       SizedBox(
                         height: 100,
                       ),
-                      Text(
-                        pages[index].title,
-                        style: TextStyle(
-                          color: mainColor,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+                      // Text(
+                      //   pages[index].title,
+                      //   style: TextStyle(
+                      //     color: mainColor,
+                      //     fontSize: 28,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      //   textAlign: TextAlign.center,
+                      // ),
+                      MyText(
+                        text: pages[index].title,
+                        color: mainColor,
+                        size: 28,
+                        weight: FontWeight.bold,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
@@ -85,14 +87,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           right: 48,
                           top: 18,
                         ),
-                        child: Text(
-                          pages[index].description,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: mainColor,
-                          ),
-                          textAlign: TextAlign.center,
+                        child: MyText(
+                          text: pages[index].description,
+                          color: mainColor,
                         ),
+
+                        // Text(
+                        //   pages[index].description,
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     color: mainColor,
+                        //   ),
+                        //   textAlign: TextAlign.center,
+                        // ),
                       ),
                     ],
                   ),
@@ -106,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
           Center(
             child: Transform.translate(
-                offset: Offset(0, fullHeight * 0.3),
+                offset: Offset(0, fullHeight * 0.33),
                 child: _displayPageIndicator(pages.length)),
           ),
           Align(
@@ -156,7 +163,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       length: length,
       indicatorPadding: EdgeInsets.all(4),
       normalBuilder: (animationController, index) => Circle(
-        size: 8.0,
+        size: 6.0,
         color: Color(0xFFD6EEE2),
       ),
       highlightedBuilder: (animationController, index) => ScaleTransition(
@@ -165,7 +172,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           curve: Curves.ease,
         ),
         child: Circle(
-          size: 12.0,
+          size: 10.0,
           color: mainColor,
         ),
       ),
