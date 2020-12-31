@@ -5,7 +5,7 @@ import 'package:student_services/screens/home_screen.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 
 class SignIn extends StatefulWidget {
   @override

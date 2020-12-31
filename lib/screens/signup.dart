@@ -6,7 +6,7 @@ import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -133,11 +133,11 @@ class _SignUpState extends State<SignUp> {
                               controller: _userPhoneController,
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
-                              decoration: textFormDecoration('Mobile Phone'),
+                              decoration: textFormDecoration('Phone'),
                               validator: (value) {
-                                return value.length > 10
+                                return value.length > 0
                                     ? null
-                                    : 'Please provid 11 numbers';
+                                    : 'Phone is empty';
                               },
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(11),
@@ -253,11 +253,12 @@ class _SignUpState extends State<SignUp> {
         .set({
       'uid': fUser.uid,
       'email': fUser.email,
-      'firstname': _userFirstNameController.text,
+      'firstName': _userFirstNameController.text,
       'lastName': _userLastNameController.text,
       'phone': _userPhoneController.text,
       'admin': false,
       'url': 'fUser.photoURL',
+      'aboutMe': 'No Bio',
     });
     await StudentServicesApp.sharedPreferences
         .setString(StudentServicesApp.userUID, fUser.uid);

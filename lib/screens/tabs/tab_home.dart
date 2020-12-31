@@ -2,10 +2,10 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:page_view_indicator/page_view_indicator.dart';
-import 'package:student_services/screens/doctor_details.dart';
+import 'package:student_services/screens/details/doctor_details.dart';
 import 'package:student_services/widgets/static_widgets.dart';
 import 'package:student_services/models/doctor_model.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 
 class HomeTab extends StatefulWidget {
   @override
@@ -16,22 +16,26 @@ class _HomeTabState extends State<HomeTab> {
   ValueNotifier<int> _pageViewNotifier = ValueNotifier(2);
   List<Doctor> doctors;
 
-  void _doctorHomeImages() {
+  void _doctorList() {
     doctors = List<Doctor>();
+    //  books = List<Book>();
     doctors.add(Doctor(
         'DR/Ahmed Mahmoud', 'https://img.youm7.com/large/620151213041930.jpg'));
     doctors.add(Doctor('DR/Mohamed Ahmed',
         'https://striveme.com/img/article/2742/5b1bc841e9967.jpg'));
     doctors.add(Doctor('DR/Mostafa Mahmoud',
         'https://img.youm7.com/large/201710060136413641.jpg'));
-    doctors.add(Doctor('DR/Ibrahiem Abdo',
-        'https://www.neshanstyle.com/blog/wp-content/uploads/2019/05/stock-man-in-suit-2-1-1024x576.jpg'));
+    doctors.add(Doctor(
+      'DR/Ibrahiem Abdo',
+      'https://www.neshanstyle.com/blog/wp-content/uploads/2019/05/stock-man-in-suit-2-1-1024x576.jpg',
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    _doctorHomeImages();
+    _doctorList();
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -192,11 +196,6 @@ class _HomeTabState extends State<HomeTab> {
                             size: 18,
                             weight: FontWeight.w600,
                           ),
-                          // CustomText(
-                          //   text: 'level 1',
-                          //   size: 13,
-                          //   color: Colors.blue,
-                          // ),
                         ],
                       ),
                       Row(
@@ -227,15 +226,6 @@ class _HomeTabState extends State<HomeTab> {
                             color: Colors.grey,
                             size: 14,
                           ),
-                          // Row(
-                          //   children: [
-                          //     CustomText(
-                          //       text: 'term 2',
-                          //       size: 13,
-                          //       color: Colors.blue,
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
                     ],
@@ -249,3 +239,14 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 }
+
+// Book(
+//         image: 'assets/images/book1.jpg',
+//         title: 'DAY FOUR',
+//         level: '1',
+//         term: '2'),
+//     Book(
+//         image: 'assets/images/book1.jpg',
+//         title: 'DAY FOUR',
+//         level: '1',
+//         term: '1'),

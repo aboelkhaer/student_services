@@ -15,4 +15,5 @@ class StudentServicesApp {
   static final String userPhone = 'phone';
   static final String userEmail = 'email';
   static final String userPhotoUrl = 'url';
+  static final String userboutMe = 'aboutMe';
 }

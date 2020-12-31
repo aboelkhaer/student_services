@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override

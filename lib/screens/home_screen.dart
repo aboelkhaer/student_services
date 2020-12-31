@@ -5,7 +5,7 @@ import 'package:student_services/screens/tabs/tab_explore.dart';
 import 'package:student_services/screens/tabs/tab_profile.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 import 'package:student_services/widgets/drawer.dart';
 
 class HomeScreen extends StatefulWidget {

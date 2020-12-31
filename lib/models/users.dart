@@ -6,12 +6,14 @@ class Users {
   String lastName;
   String url;
   String phone;
+  String email;
   bool admin;
 
   Users(
       {this.admin,
       this.firstName,
       this.id,
+      this.email,
       this.lastName,
       this.phone,
       this.url});
@@ -21,6 +23,7 @@ class Users {
     firstName = data['firstName'];
     lastName = data['lastName'];
     phone = data['phone'];
+    email = data['email'];
     url = data['url'];
     admin = data['admin'] ?? false;
   }
@@ -35,10 +38,11 @@ class Users {
         .then((result) {
       admin = result['admin'];
       id = result['uid'];
-      firstName = result['firstName'];
-      lastName = result['lastName'];
-      phone = result['phone'];
-      url = result['url'];
+      firstName = result['firstName'] ?? 'Non name';
+      lastName = result['lastName'] ?? 'Non name';
+      phone = result['phone'] ?? 'Non phone';
+      email = result['email'] ?? 'None email';
+      url = result['url'] ?? 'None url';
     });
   }
 }

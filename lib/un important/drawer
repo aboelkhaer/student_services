@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:student_services/utility/capitalize.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
+import 'package:student_services/utility/shared_pref.dart';
 import 'package:student_services/widgets/account_in_drawer.dart';
 import 'package:student_services/widgets/my_text.dart';
 import 'package:student_services/models/users.dart';
@@ -17,15 +15,15 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   bool _isAdmin;
   Users users = Users();
+  @override
+  void initState() {
+    super.initState();
+    readFromSharedPref(firstName, lastName, email);
+  }
+
   String firstName = '';
   String lastName = '';
   String email = '';
-
-  @override
-  void initState() {
-    readFromSharedPref();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,102 +35,62 @@ class _MyDrawerState extends State<MyDrawer> {
               padding: EdgeInsets.all(0.0),
               children: <Widget>[
                 FutureBuilder(
-                    future: readFromSharedPref(),
+                    future: users.getUsereData(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         return accountInDrawer(
                           MyText(
+                            // text:
+                            //     '${users.firstName[0].toUpperCase()}${users.lastName[0].toUpperCase()}',
                             text:
                                 '${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}',
                             color: Colors.white,
-                            weight: FontWeight.bold,
                             size: 24,
                           ),
                           MyText(
-                            text:
-                                '${capitalize(firstName)} ${capitalize(lastName)}',
-                            size: 20,
+                            // text: '${users.firstName}',
+                            text: firstName,
+                            size: 15,
                             color: Colors.white,
                             weight: FontWeight.w700,
                           ),
                           MyText(
-                            text: email,
+                            // text: '${users.email}',
+                            text: lastName,
                             color: Colors.white,
                             size: 14,
                           ),
                         );
                       } else {
-                        return Container(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                ),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
+                        return accountInDrawer(
+                          SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(),
+                          ),
+                          SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(),
+                          ),
+                          SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(),
                           ),
                         );
                       }
                     }),
                 InkWell(
-                  onTap: () {
-                    Fluttertoast.showToast(msg: 'Soon.');
-                  },
+                  onTap: () {},
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
-                      text: 'Support Us',
+                      text: 'Help and Feedback',
                       align: TextAlign.start,
-                      weight: FontWeight.bold,
-                    ),
-                    leading: Icon(
-                      Icons.favorite,
-                      color: mainColor,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                Divider(
-                  thickness: 0.18,
-                  color: mainColor,
-                ),
-                InkWell(
-                  onTap: () {
-                    Fluttertoast.showToast(msg: 'Soon.');
-                  },
-                  child: ListTile(
-                    title: MyText(
-                      size: 15.5,
-                      text: 'Help And Feedback',
-                      align: TextAlign.start,
-                      weight: FontWeight.bold,
                     ),
                     leading: Icon(
                       Icons.help,
-                      color: mainColor,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Fluttertoast.showToast(msg: 'Soon.');
-                  },
-                  child: ListTile(
-                    title: MyText(
-                      size: 15.5,
-                      text: 'Share App',
-                      align: TextAlign.start,
-                      weight: FontWeight.bold,
-                    ),
-                    leading: Icon(
-                      Icons.share,
-                      color: mainColor,
-                      size: 22,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -140,35 +98,12 @@ class _MyDrawerState extends State<MyDrawer> {
                   onTap: () {},
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
-                      text: 'Who Us?',
-                      align: TextAlign.start,
-                      weight: FontWeight.bold,
-                    ),
-                    leading: Icon(
-                      Icons.person,
-                      color: mainColor,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                Divider(
-                  thickness: 0.18,
-                  color: mainColor,
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    title: MyText(
-                      size: 15.5,
                       text: 'Change Password',
-                      weight: FontWeight.bold,
                       align: TextAlign.start,
                     ),
                     leading: Icon(
                       Icons.lock,
-                      color: mainColor,
-                      size: 22,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -179,15 +114,12 @@ class _MyDrawerState extends State<MyDrawer> {
                   },
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
                       text: 'Sign Out',
-                      weight: FontWeight.bold,
                       align: TextAlign.start,
                     ),
                     leading: Icon(
                       Icons.exit_to_app,
-                      color: mainColor,
-                      size: 22,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -195,7 +127,7 @@ class _MyDrawerState extends State<MyDrawer> {
             ),
           ),
           // This container holds the align
-          // This function for defference between doctors and students
+
           FutureBuilder(
             future: users.getUsereData(),
             builder: (context, snapshot) {
@@ -214,17 +146,6 @@ class _MyDrawerState extends State<MyDrawer> {
         ],
       ),
     );
-  }
-
-  readFromSharedPref() async {
-    StudentServicesApp.sharedPreferences =
-        await SharedPreferences.getInstance();
-    firstName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userFirstName);
-    lastName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userLastName);
-    email = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userEmail);
   }
 
   Future signOut() async {
@@ -268,14 +189,10 @@ class _MyDrawerState extends State<MyDrawer> {
                   child: ListTile(
                     trailing: Icon(
                       Icons.arrow_forward_ios,
-                      color: mainColor,
                       size: 20,
                     ),
-                    title: MyText(
-                      text: 'Doctor Panal',
-                      color: mainColor,
-                      weight: FontWeight.w500,
-                      align: TextAlign.start,
+                    title: Text(
+                      'Doctor Panal',
                     ),
                   ),
                 ),
@@ -286,11 +203,9 @@ class _MyDrawerState extends State<MyDrawer> {
       );
     } else {
       return Container(
-        margin: EdgeInsets.only(bottom: 16),
         alignment: Alignment.center,
         child: MyText(
-          size: 14,
-          text: 'You need access to go to doctors side.',
+          text: 'You are\'t a doctor',
           color: mainColor,
         ),
       );

@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_services/screens/signin.dart';
 import 'package:student_services/models/welcom_page_model.dart';
 import 'package:student_services/utility/constans.dart';
-import 'package:student_services/widgets/custom_text.dart';
+import 'package:student_services/widgets/my_text.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
