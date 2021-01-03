@@ -25,11 +25,11 @@ class Users {
     phone = data['phone'];
     email = data['email'];
     url = data['url'];
-    admin = data['admin'] ?? false;
+    admin = data['admin'];
   }
 
   getUsereData() async {
-    var uid = await StudentServicesApp.auth.currentUser.uid;
+    var uid = StudentServicesApp.auth.currentUser.uid;
 
     await StudentServicesApp.firebaseFirestore
         .collection('users')
@@ -38,11 +38,11 @@ class Users {
         .then((result) {
       admin = result['admin'];
       id = result['uid'];
-      firstName = result['firstName'] ?? 'Non name';
-      lastName = result['lastName'] ?? 'Non name';
-      phone = result['phone'] ?? 'Non phone';
-      email = result['email'] ?? 'None email';
-      url = result['url'] ?? 'None url';
+      firstName = result['firstName'];
+      lastName = result['lastName'];
+      phone = result['phone'];
+      email = result['email'];
+      url = result['url'];
     });
   }
 }

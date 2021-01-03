@@ -175,6 +175,7 @@ class _SignUpState extends State<SignUp> {
                         child: RaisedButton(
                           child: MyText(
                             text: 'Sign Up',
+                            weight: FontWeight.bold,
                             color: Colors.white,
                           ),
                           onPressed: () async {
@@ -258,7 +259,7 @@ class _SignUpState extends State<SignUp> {
       'phone': _userPhoneController.text,
       'admin': false,
       'url': 'fUser.photoURL',
-      'aboutMe': 'No Bio',
+      'aboutMe': 'Bio...',
     });
     await StudentServicesApp.sharedPreferences
         .setString(StudentServicesApp.userUID, fUser.uid);

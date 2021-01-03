@@ -1,8 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:student_services/utility/capitalize.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
@@ -29,36 +28,17 @@ class _ProfileTabState extends State<ProfileTab> {
 
   bool _isLoading = false;
 
-  @override
-  void initState() {
-    readSharedPref();
-    super.initState();
-  }
-
   String firstName = '';
   String lastName = '';
   String phone = '';
   String aboutMe = '';
-  getCaracter() async {
-    StudentServicesApp.sharedPreferences =
-        await SharedPreferences.getInstance();
-    firstNameCaracter = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userFirstName);
-    lastNameCaracter = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userLastName);
-  }
-
-  // @override
-  // void dispose() {
-  //   _firstNameController.dispose();
-  //   _lastNameController.dispose();
-  //   _phoneController.dispose();
-  //   _aboutMeFocusNode.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
+    var uid = StudentServicesApp.auth.currentUser.uid;
+    Future<DocumentSnapshot> myInfo =
+        FirebaseFirestore.instance.collection('users').doc(uid).get();
+
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -78,32 +58,20 @@ class _ProfileTabState extends State<ProfileTab> {
                       width: size.width,
                       alignment: Alignment.center,
                       child: FutureBuilder(
-                        future: getCaracter(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return MyText(
-                              text:
-                                  '${firstNameCaracter[0].toUpperCase()}${lastNameCaracter[0].toUpperCase()}',
-                              size: 45,
-                              weight: FontWeight.w700,
-                            );
-                          } else {
-                            return CircularProgressIndicator();
-                          }
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          // border: Border(
-                          //   bottom: BorderSide(
-                          //     color: mainColor,
-                          //     width: 1.5,
-                          //   ),
-                          // ),
-                          //   borderRadius: BorderRadius.all(
-                          //     Radius.circular(100),
-                          //   ),
-                          ),
+                          future: myInfo,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return MyText(
+                                text:
+                                    '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
+                                size: 45,
+                                weight: FontWeight.w700,
+                              );
+                            } else {
+                              return Container();
+                            }
+                          }),
                     ),
                     SizedBox(
                       height: 20,
@@ -146,16 +114,16 @@ class _ProfileTabState extends State<ProfileTab> {
                                             decoration: textFormDecoration(
                                                 'First name...'),
                                             keyboardType: TextInputType.text,
-                                            controller: _firstNameController,
-                                            inputFormatters: [
-                                              LengthLimitingTextInputFormatter(
-                                                  15),
-                                            ],
                                             validator: (value) {
                                               return value.length > 0
                                                   ? null
                                                   : 'First name is empty';
                                             },
+                                            controller: _firstNameController,
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(
+                                                  15),
+                                            ],
                                             onChanged: (value) {
                                               firstName = value;
                                             },
@@ -192,15 +160,15 @@ class _ProfileTabState extends State<ProfileTab> {
                                           padding: const EdgeInsets.only(
                                               left: 6, right: 8),
                                           child: TextFormField(
-                                            decoration: textFormDecoration(
-                                                'Last name...'),
-                                            keyboardType: TextInputType.text,
-                                            controller: _lastNameController,
                                             validator: (value) {
                                               return value.length > 0
                                                   ? null
                                                   : 'Last name is empty';
                                             },
+                                            decoration: textFormDecoration(
+                                                'Last name...'),
+                                            keyboardType: TextInputType.text,
+                                            controller: _lastNameController,
                                             onChanged: (value) {
                                               lastName = value;
                                             },
@@ -236,20 +204,17 @@ class _ProfileTabState extends State<ProfileTab> {
                                 primaryColor: mainColor,
                               ),
                               child: TextFormField(
+                                validator: (value) {
+                                  return value.length > 0
+                                      ? null
+                                      : 'Phone is empty';
+                                },
                                 decoration: textFormDecoration('Your phone...'),
                                 keyboardType: TextInputType.phone,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(11),
                                 ],
                                 controller: _phoneController,
-                                validator: (value) {
-                                  return value.length > 0
-                                      ? null
-                                      : 'Phone is empty';
-                                },
-                                onChanged: (value) {
-                                  phone = value;
-                                },
                                 focusNode: _phoneFocusNode,
                               ),
                             ),
@@ -279,14 +244,14 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                               child: TextFormField(
                                 decoration: textFormDecoration('Bio...'),
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                controller: _aboutMeController,
                                 validator: (value) {
                                   return value.length > 0
                                       ? null
                                       : 'Bio is empty';
                                 },
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                controller: _aboutMeController,
                                 onChanged: (value) {
                                   aboutMe = value;
                                 },
@@ -333,57 +298,41 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  String firstNameCaracter = '';
-  String lastNameCaracter = '';
-  readSharedPref() async {
-    StudentServicesApp.sharedPreferences =
-        await SharedPreferences.getInstance();
-    firstName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userFirstName);
-    lastName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userLastName);
-    phone = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userPhone);
-    aboutMe = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userboutMe);
-
-    _firstNameController = TextEditingController(text: capitalize(firstName));
-    _lastNameController = TextEditingController(text: capitalize(lastName));
-    _phoneController = TextEditingController(text: phone);
-    _aboutMeController = TextEditingController(text: aboutMe);
-    setState(() {});
-  }
-
   updateData() {
-    _firstNameFocusNode.unfocus();
-    _lastNameFocusNode.unfocus();
-    _phoneFocusNode.unfocus();
-    _aboutMeFocusNode.unfocus();
-    setState(() {
-      _isLoading = false;
-    });
-    try {
-      var uid = StudentServicesApp.auth.currentUser.uid;
-      StudentServicesApp.firebaseFirestore.collection('users').doc(uid).update({
-        'firstName': firstName,
-        'lastName': lastName,
-        'phone': phone,
-        'aboutMe': aboutMe,
-      }).then((data) async {
-        await StudentServicesApp.sharedPreferences
-            .setString('firstName', firstName);
-        await StudentServicesApp.sharedPreferences
-            .setString('lastName', lastName);
-        await StudentServicesApp.sharedPreferences.setString('phone', phone);
-        await StudentServicesApp.sharedPreferences
-            .setString('aboutMe', aboutMe);
-        setState(() {
-          _isLoading = false;
-        });
-        Fluttertoast.showToast(msg: 'Updated Successfully.');
+    if (_formKey.currentState.validate()) {
+      _firstNameFocusNode.unfocus();
+      _lastNameFocusNode.unfocus();
+      _phoneFocusNode.unfocus();
+      _aboutMeFocusNode.unfocus();
+      setState(() {
+        _isLoading = false;
       });
-    } on FirebaseException catch (e) {
-      print(e.message);
+      try {
+        var uid = StudentServicesApp.auth.currentUser.uid;
+        StudentServicesApp.firebaseFirestore
+            .collection('users')
+            .doc(uid)
+            .update({
+          'firstName': firstName,
+          'lastName': lastName,
+          'phone': phone,
+          'aboutMe': aboutMe,
+        }).then((data) async {
+          // await StudentServicesApp.sharedPreferences
+          //     .setString('firstName', firstName);
+          // await StudentServicesApp.sharedPreferences
+          //     .setString('lastName', lastName);
+          // await StudentServicesApp.sharedPreferences.setString('phone', phone);
+          // await StudentServicesApp.sharedPreferences
+          //     .setString('aboutMe', aboutMe);
+          setState(() {
+            _isLoading = false;
+          });
+          Fluttertoast.showToast(msg: 'Updated Successfully.');
+        });
+      } on FirebaseException catch (e) {
+        print(e.message);
+      }
     }
   }
 }

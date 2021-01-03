@@ -1,11 +1,10 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_services/utility/capitalize.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
-import 'package:student_services/widgets/account_in_drawer.dart';
 import 'package:student_services/widgets/my_text.dart';
 import 'package:student_services/models/users.dart';
 
@@ -20,15 +19,14 @@ class _MyDrawerState extends State<MyDrawer> {
   String firstName = '';
   String lastName = '';
   String email = '';
-
-  @override
-  void initState() {
-    readFromSharedPref();
-    super.initState();
-  }
+  double drawerTextSize = 15.3;
 
   @override
   Widget build(BuildContext context) {
+    var uid = StudentServicesApp.auth.currentUser.uid;
+    Future<DocumentSnapshot> myInfo =
+        FirebaseFirestore.instance.collection('users').doc(uid).get();
+
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -36,55 +34,75 @@ class _MyDrawerState extends State<MyDrawer> {
             child: ListView(
               padding: EdgeInsets.all(0.0),
               children: <Widget>[
-                FutureBuilder(
-                    future: readFromSharedPref(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return accountInDrawer(
-                          MyText(
+                UserAccountsDrawerHeader(
+                  currentAccountPicture: Container(
+                    alignment: Alignment.center,
+                    child: FutureBuilder(
+                        future: myInfo,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return MyText(
+                              text:
+                                  '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
+                              color: Colors.white,
+                              weight: FontWeight.bold,
+                              size: 24,
+                            );
+                          } else {
+                            return Container();
+                          }
+                        }),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1.5, color: Colors.white),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: ExactAssetImage('assets/images/drawer.jpg'),
+                        fit: BoxFit.cover),
+                  ),
+                  accountName: FutureBuilder(
+                      future: myInfo,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return MyText(
                             text:
-                                '${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}',
-                            color: Colors.white,
-                            weight: FontWeight.bold,
-                            size: 24,
-                          ),
-                          MyText(
-                            text:
-                                '${capitalize(firstName)} ${capitalize(lastName)}',
+                                '${capitalize(snapshot.data['firstName'])} ${capitalize(snapshot.data['lastName'])}',
                             size: 20,
                             color: Colors.white,
                             weight: FontWeight.w700,
-                          ),
-                          MyText(
-                            text: email,
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                  accountEmail: FutureBuilder(
+                      future: myInfo,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return MyText(
+                            text: snapshot.data['email'],
                             color: Colors.white,
                             size: 14,
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                ),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    }),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                ),
+                // accountInDrawer(
+
                 InkWell(
                   onTap: () {
                     Fluttertoast.showToast(msg: 'Soon.');
                   },
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Support Us',
                       align: TextAlign.start,
                       weight: FontWeight.bold,
@@ -106,7 +124,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   },
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Help And Feedback',
                       align: TextAlign.start,
                       weight: FontWeight.bold,
@@ -124,7 +142,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   },
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Share App',
                       align: TextAlign.start,
                       weight: FontWeight.bold,
@@ -140,7 +158,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   onTap: () {},
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Who Us?',
                       align: TextAlign.start,
                       weight: FontWeight.bold,
@@ -160,7 +178,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   onTap: () {},
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Change Password',
                       weight: FontWeight.bold,
                       align: TextAlign.start,
@@ -179,7 +197,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   },
                   child: ListTile(
                     title: MyText(
-                      size: 15.5,
+                      size: drawerTextSize,
                       text: 'Sign Out',
                       weight: FontWeight.bold,
                       align: TextAlign.start,
@@ -216,16 +234,16 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 
-  readFromSharedPref() async {
-    StudentServicesApp.sharedPreferences =
-        await SharedPreferences.getInstance();
-    firstName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userFirstName);
-    lastName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userLastName);
-    email = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userEmail);
-  }
+  // readFromSharedPref() async {
+  //   StudentServicesApp.sharedPreferences =
+  //       await SharedPreferences.getInstance();
+  //   firstName = StudentServicesApp.sharedPreferences
+  //       .getString(StudentServicesApp.userFirstName);
+  //   lastName = StudentServicesApp.sharedPreferences
+  //       .getString(StudentServicesApp.userLastName);
+  //   email = StudentServicesApp.sharedPreferences
+  //       .getString(StudentServicesApp.userEmail);
+  // }
 
   Future signOut() async {
     try {
@@ -234,18 +252,6 @@ class _MyDrawerState extends State<MyDrawer> {
       print(e.toString());
     }
   }
-
-  // _getProfileData() async {
-  //   var uid = await StudentServicesApp.auth.currentUser.uid;
-
-  //   await StudentServicesApp.firebaseFirestore
-  //       .collection('users')
-  //       .doc(uid)
-  //       .get()
-  //       .then((result) {
-  //     users.admin = result['admin'];
-  //   });
-  // }
 
   Widget adminFeature() {
     if (_isAdmin == true) {
@@ -263,7 +269,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 // Divider(),
                 InkWell(
                   onTap: () {
-                    Navigator.popAndPushNamed(context, 'DoctorPanal');
+                    Navigator.popAndPushNamed(context, 'Dashboard');
                   },
                   child: ListTile(
                     trailing: Icon(
@@ -272,7 +278,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       size: 20,
                     ),
                     title: MyText(
-                      text: 'Doctor Panal',
+                      text: 'Dashboard',
                       color: mainColor,
                       weight: FontWeight.w500,
                       align: TextAlign.start,

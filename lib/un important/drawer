@@ -212,3 +212,72 @@ class _MyDrawerState extends State<MyDrawer> {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------
+
+
+
+
+
+
+
+ FutureBuilder(
+                    future: users.getUsereData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return accountInDrawer(
+                          MyText(
+                            text:
+                                '${users.firstName[0].toUpperCase()}${users.lastName[0].toUpperCase()}',
+                            color: Colors.white,
+                            weight: FontWeight.bold,
+                            size: 24,
+                          ),
+                          MyText(
+                            text:
+                                '${capitalize(users.firstName)} ${capitalize(users.lastName)}',
+                            size: 20,
+                            color: Colors.white,
+                            weight: FontWeight.w700,
+                          ),
+                          MyText(
+                            text: users.email,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
+                                ),
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    }),

@@ -2,6 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_services/screens/details/post_details.dart';
+import 'package:student_services/screens/doctor_screens/add_post.dart';
+import 'package:student_services/screens/doctor_screens/dashboard.dart';
+import 'package:student_services/screens/doctor_screens/show_posts.dart';
 import 'package:student_services/screens/signin.dart';
 import 'package:student_services/screens/signup.dart';
 import 'package:student_services/screens/welcome_screen.dart';
@@ -10,7 +14,6 @@ import 'package:student_services/utility/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/screens/change_password.dart';
-import 'package:student_services/screens/doctor_panal.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +58,10 @@ class StudentsServices extends StatelessWidget {
           'SignUp': (context) => SignUp(),
           'HomeScreen': (context) => HomeScreen(),
           'ChangePassword': (context) => ChangePasswordScreen(),
-          'DoctorPanal': (context) => DoctorPanal(),
+          'Dashboard': (context) => Dashboard(),
+          'AddPost': (context) => AddPost(),
+          'ShowPosts': (context) => ShowPosts(),
+          'PostDetails': (context) => PostDetails(),
         },
       ),
     );

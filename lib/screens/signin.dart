@@ -117,6 +117,7 @@ class _SignInState extends State<SignIn> {
                           child: MyText(
                             text: 'Sign In',
                             color: Colors.white,
+                            weight: FontWeight.bold,
                           ),
                           // Text(
                           //   'Sign In',
@@ -149,6 +150,7 @@ class _SignInState extends State<SignIn> {
                           child: Text(
                             'Register now',
                             style: TextStyle(
+                              fontSize: 14,
                               color: mainColor,
                               decoration: TextDecoration.underline,
                             ),
@@ -171,8 +173,8 @@ class _SignInState extends State<SignIn> {
     try {
       StudentServicesApp.user = (await StudentServicesApp.auth
               .signInWithEmailAndPassword(
-                  email: _userEmailController.text.trim(),
-                  password: _userPasswordController.text.trim()))
+                  email: _userEmailController.text,
+                  password: _userPasswordController.text))
           .user;
       // if (!StudentServicesApp.user.emailVerified) {
       //   await StudentServicesApp.user.sendEmailVerification();

@@ -114,6 +114,9 @@ class _HomeTabState extends State<HomeTab> {
                           _drawSingleRow(size, 1),
                           _drawSingleRow(size, 2),
                           _drawSingleRow(size, 3),
+                          SizedBox(
+                            height: 40,
+                          ),
                         ],
                       );
                     })

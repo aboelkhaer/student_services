@@ -1,0 +1,87 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:student_services/models/post_model.dart';
+
+class ExploreTab extends StatefulWidget {
+  @override
+  _ExploreTabState createState() => _ExploreTabState();
+}
+
+class _ExploreTabState extends State<ExploreTab> {
+  Posts posts = Posts();
+  @override
+  Widget build(BuildContext context) {
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    return Scaffold(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: posts.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          return new ListView(
+            children: snapshot.data.docs.map((DocumentSnapshot document) {
+              return new ListTile(
+                title: new Text(document.data()['postTitle']),
+                subtitle: new Text(document.data()['postDescription']),
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+
+
+----------------------------------------------------------
+
+
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+class ExploreTab extends StatefulWidget {
+  @override
+  _ExploreTabState createState() => _ExploreTabState();
+}
+
+class _ExploreTabState extends State<ExploreTab> {
+  @override
+  Widget build(BuildContext context) {
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    return Scaffold(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: posts.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading");
+          }
+
+          return new ListView.builder(
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index) {
+              DocumentSnapshot myData = snapshot.data.docs[index];
+              return ListTile(
+                title: Text(myData.data()['postTitle']),
+                subtitle: Text(myData.data()['postDescription']),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
