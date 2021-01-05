@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:student_services/models/post_model.dart';
 import 'package:student_services/screens/details/post_details.dart';
@@ -19,15 +20,12 @@ class _ExploreTabState extends State<ExploreTab> {
     Query myPosts = StudentServicesApp.firebaseFirestore
         .collection('posts')
         .orderBy('time', descending: true);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: StreamBuilder<QuerySnapshot>(
         stream: myPosts.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Something went wrong'));
-          }
-
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
@@ -58,6 +56,7 @@ class _ExploreTabState extends State<ExploreTab> {
   }
 
   Widget postBody(Post post, BuildContext context) {
+    String uid = StudentServicesApp.auth.currentUser.uid;
     var size = MediaQuery.of(context).size;
     var time =
         DateTime.fromMillisecondsSinceEpoch(post.time.millisecondsSinceEpoch);
@@ -85,6 +84,46 @@ class _ExploreTabState extends State<ExploreTab> {
               children: [
                 Row(
                   children: [
+                    Material(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        child: FutureBuilder(
+                          future: _getUserProfileImage(context, uid),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: snapshot.data == null
+                                        ? AssetImage('assets/images/avatar.png')
+                                        : snapshot.data,
+                                  ),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                child: CircularProgressIndicator(),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                              );
+                            }
+                            return Container();
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -137,5 +176,20 @@ class _ExploreTabState extends State<ExploreTab> {
         ),
       ),
     );
+  }
+
+  _getUserProfileImage(BuildContext context, String imageName) async {
+    NetworkImage image;
+    await FireStoreService.loadImage(context, imageName).then((value) {
+      image = NetworkImage(value.toString());
+    });
+    return image;
+  }
+}
+
+class FireStoreService extends ChangeNotifier {
+  FireStoreService();
+  static Future<dynamic> loadImage(BuildContext context, String Image) async {
+    return await FirebaseStorage.instance.ref().child(Image).getDownloadURL();
   }
 }

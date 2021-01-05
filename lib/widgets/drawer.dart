@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:student_services/utility/capitalize.dart';
@@ -16,17 +17,21 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   bool _isAdmin;
   Users users = Users();
-  String firstName = '';
-  String lastName = '';
-  String email = '';
+  // String firstName = '';
+  // String lastName = '';
+  // String email = '';
   double drawerTextSize = 15.3;
+//   Future getUserImage() async {
+//     final imageUrl = await imageLink.getDownloadUrl();
+// Image.network(imageUrl.toString());
+//   }
 
   @override
   Widget build(BuildContext context) {
     var uid = StudentServicesApp.auth.currentUser.uid;
     Future<DocumentSnapshot> myInfo =
         FirebaseFirestore.instance.collection('users').doc(uid).get();
-
+    Size size = MediaQuery.of(context).size;
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -34,67 +39,96 @@ class _MyDrawerState extends State<MyDrawer> {
             child: ListView(
               padding: EdgeInsets.all(0.0),
               children: <Widget>[
-                UserAccountsDrawerHeader(
-                  currentAccountPicture: Container(
-                    alignment: Alignment.center,
-                    child: FutureBuilder(
-                        future: myInfo,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return MyText(
-                              text:
-                                  '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
-                              color: Colors.white,
-                              weight: FontWeight.bold,
-                              size: 24,
-                            );
-                          } else {
-                            return Container();
-                          }
-                        }),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Colors.white),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(50),
-                      ),
-                    ),
-                  ),
+                //Drawer head
+                Container(
+                  padding: EdgeInsets.all(14),
+                  height: size.height * 0.23,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: ExactAssetImage('assets/images/drawer.jpg'),
-                        fit: BoxFit.cover),
+                      image: ExactAssetImage('assets/images/drawer.jpg'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  accountName: FutureBuilder(
-                      future: myInfo,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return MyText(
-                            text:
-                                '${capitalize(snapshot.data['firstName'])} ${capitalize(snapshot.data['lastName'])}',
-                            size: 20,
-                            color: Colors.white,
-                            weight: FontWeight.w700,
-                          );
-                        } else {
-                          return Container();
-                        }
-                      }),
-                  accountEmail: FutureBuilder(
-                      future: myInfo,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return MyText(
-                            text: snapshot.data['email'],
-                            color: Colors.white,
-                            size: 14,
-                          );
-                        } else {
-                          return Container();
-                        }
-                      }),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Material(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          child: FutureBuilder(
+                            future: _getUserProfileImage(context, uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                return Container(
+                                  width: 70,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: snapshot.data == null
+                                          ? AssetImage(
+                                              'assets/images/avatar.png')
+                                          : snapshot.data,
+                                    ),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                );
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container(
+                                  child: CircularProgressIndicator(),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                );
+                              }
+                              return Container();
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      FutureBuilder(
+                          future: myInfo,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return MyText(
+                                text:
+                                    '${capitalize(snapshot.data['firstName'])} ${capitalize(snapshot.data['lastName'])}',
+                                size: 20,
+                                color: Colors.white,
+                                weight: FontWeight.w700,
+                              );
+                            } else {
+                              return Container();
+                            }
+                          }),
+                      FutureBuilder(
+                          future: myInfo,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return MyText(
+                                text: snapshot.data['email'],
+                                color: Colors.white,
+                                size: 15,
+                              );
+                            } else {
+                              return Container();
+                            }
+                          }),
+                    ],
+                  ),
                 ),
-                // accountInDrawer(
+
+                //Drawer body
 
                 InkWell(
                   onTap: () {
@@ -234,6 +268,14 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 
+  _getUserProfileImage(BuildContext context, String imageName) async {
+    NetworkImage image;
+    await FireStoreService.loadImage(context, imageName).then((value) {
+      image = NetworkImage(value.toString());
+    });
+    return image;
+  }
+
   // readFromSharedPref() async {
   //   StudentServicesApp.sharedPreferences =
   //       await SharedPreferences.getInstance();
@@ -301,5 +343,12 @@ class _MyDrawerState extends State<MyDrawer> {
         ),
       );
     }
+  }
+}
+
+class FireStoreService extends ChangeNotifier {
+  FireStoreService();
+  static Future<dynamic> loadImage(BuildContext context, String Image) async {
+    return await FirebaseStorage.instance.ref().child(Image).getDownloadURL();
   }
 }

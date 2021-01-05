@@ -7,7 +7,7 @@ class Post {
   String description;
   String userFirstName;
   String userLastName;
-  String postImage;
+  String postImageUrl;
   String userUID;
   Timestamp time;
 
@@ -16,7 +16,7 @@ class Post {
       this.userFirstName,
       this.userLastName,
       this.description,
-      this.postImage,
+      this.postImageUrl,
       this.time,
       this.userUID});
 
@@ -25,7 +25,7 @@ class Post {
     description = json['postDescription'];
     userFirstName = json['userFirstName'];
     userLastName = json['userLastName'];
-    postImage = json['postImage'];
+    postImageUrl = json['postImageUrl'];
     userUID = json['userUID'];
     time = json['time'];
   }
@@ -42,7 +42,7 @@ class Post {
       description = result['postDescription'];
       userFirstName = result['userFirstName'];
       userLastName = result['userLastName'];
-      postImage = result['postImage'];
+      postImageUrl = result['postImageUrl'];
       userUID = result['userUID'];
       time = result['time'];
     });

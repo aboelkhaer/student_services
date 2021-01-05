@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_services/models/users.dart';
@@ -17,6 +16,7 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _postUrlController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -24,6 +24,7 @@ class _AddPostState extends State<AddPost> {
     super.dispose();
     _descriptionController.dispose();
     _titleController.dispose();
+    _postUrlController.dispose();
   }
 
   @override
@@ -46,82 +47,91 @@ class _AddPostState extends State<AddPost> {
           weight: FontWeight.bold,
         ),
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      return value.length > 0 ? null : 'Title is empty';
-                    },
-                    controller: _titleController,
-                    keyboardType: TextInputType.text,
-                    decoration: textFormDecoration('Title'),
+        alignment: Alignment.center,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    return value.length > 0 ? null : 'Title is empty';
+                  },
+                  controller: _titleController,
+                  keyboardType: TextInputType.text,
+                  decoration: textFormDecoration('Title'),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  textInputAction: TextInputAction.next,
+                  // validator: (value) {
+                  //   return value.length > 0 ? null : 'Image url is empty';
+                  // },
+                  controller: _postUrlController,
+                  keyboardType: TextInputType.url,
+                  decoration: textFormDecoration('Image Url'),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                TextFormField(
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    return value.length > 0 ? null : 'Description is empty';
+                  },
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 8,
+                  controller: _descriptionController,
+                  decoration: textFormDecoration('Description'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 50,
+                    bottom: 24,
+                    left: 16,
+                    right: 16,
                   ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  TextFormField(
-                    textInputAction: TextInputAction.done,
-                    validator: (value) {
-                      return value.length > 0 ? null : 'Description is empty';
-                    },
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 8,
-                    controller: _descriptionController,
-                    decoration: textFormDecoration('Description'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 50,
-                      bottom: 24,
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: RaisedButton(
-                        onPressed: () {
-                          Fluttertoast.showToast(
-                              msg: 'Long press to add post.');
-                        },
-                        child: MyText(
-                          text: 'Send',
-                          color: Colors.white,
-                          weight: FontWeight.bold,
-                        ),
-                        onLongPress: () async {
-                          if (_formKey.currentState.validate()) {
-                            try {
-                              _getUserFromSharedPref(StudentServicesApp.user);
-                              Navigator.of(context).pop();
-                              _titleController.text = '';
-                              _descriptionController.text = '';
-                              Fluttertoast.showToast(
-                                  msg: 'Done', textColor: Colors.green);
-                            } on FirebaseException catch (e) {
-                              Fluttertoast.showToast(
-                                  msg: e.message, textColor: Colors.red);
-                            }
-                          } else {
-                            Fluttertoast.showToast(msg: 'Enter data first.');
-                          }
-                        },
+                  child: SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: RaisedButton(
+                      onPressed: () {
+                        Fluttertoast.showToast(msg: 'Long press to add post.');
+                      },
+                      child: MyText(
+                        text: 'Send',
+                        color: Colors.white,
+                        weight: FontWeight.bold,
                       ),
+                      onLongPress: () async {
+                        if (_formKey.currentState.validate()) {
+                          try {
+                            _addPostToDatabase(StudentServicesApp.user);
+                            Navigator.of(context).pop();
+                            _titleController.text = '';
+                            _descriptionController.text = '';
+                            Fluttertoast.showToast(
+                                msg: 'Done', textColor: Colors.green);
+                          } on FirebaseException catch (e) {
+                            Fluttertoast.showToast(
+                                msg: e.message, textColor: Colors.red);
+                          }
+                        } else {
+                          Fluttertoast.showToast(msg: 'Enter data first.');
+                        }
+                      },
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ),
         ),
@@ -129,15 +139,16 @@ class _AddPostState extends State<AddPost> {
     );
   }
 
-  Users users = Users();
-  Future _getUserFromSharedPref(User fUser) async {
+  // Users users = Users();
+
+  Future _addPostToDatabase(User fUser) async {
     StudentServicesApp.firebaseFirestore.collection('posts').add({
       'postTitle': _titleController.text.trim(),
       'postDescription': _descriptionController.text.trim(),
       'userUID': fUser.uid,
       'userFirstName': firstName,
       'userLastName': lastName,
-      'postImage': 'non image',
+      'postImageUrl': _postUrlController.text.trim(),
       'time': DateTime.now(),
     });
   }
@@ -154,69 +165,4 @@ class _AddPostState extends State<AddPost> {
         .getString(StudentServicesApp.userLastName);
     setState(() {});
   }
-
-  // YYDialog _showDialog() {
-  //   return YYDialog().build(context)
-  //     ..width = MediaQuery.of(context).size.width * 0.7
-  //     ..height = MediaQuery.of(context).size.height * 0.2
-  //     ..widget(
-  //       Container(
-  //         margin: EdgeInsets.all(16),
-  //         child: Column(
-  //           children: [
-  //             Row(
-  //               children: [
-  //                 SizedBox(
-  //                   height: 10,
-  //                 ),
-  //                 MyText(
-  //                   text: 'Add post, sure?',
-  //                   size: 18,
-  //                 ),
-  //               ],
-  //             ),
-  //             SizedBox(
-  //               height: MediaQuery.of(context).size.height * 0.05,
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.end,
-  //               children: [
-  //                 GestureDetector(
-  //                   onTap: () {
-  //                     Navigator.pop(context);
-  //                   },
-  //                   child: Container(
-  //                     child: Text('Cancel'),
-  //                   ),
-  //                 ),
-  //                 SizedBox(
-  //                   width: 15,
-  //                 ),
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     try {
-  //                       _getUserFromSharedPref(StudentServicesApp.user);
-  //                       Navigator.of(context).pop();
-  //                       _titleController.text = '';
-  //                       _descriptionController.text = '';
-  //                       Fluttertoast.showToast(
-  //                           msg: 'Done', textColor: Colors.green);
-  //                     } on FirebaseException catch (e) {
-  //                       Fluttertoast.showToast(
-  //                           msg: e.message, textColor: Colors.red);
-  //                     }
-  //                   },
-  //                   child: Container(
-  //                     margin: EdgeInsets.symmetric(horizontal: 10),
-  //                     child: Text('Yes'),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     )
-  //     ..show();
-  // }
 }

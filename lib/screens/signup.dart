@@ -4,7 +4,6 @@ import 'package:student_services/screens/home_screen.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:student_services/widgets/my_text.dart';
 
@@ -259,6 +258,8 @@ class _SignUpState extends State<SignUp> {
       'phone': _userPhoneController.text,
       'admin': false,
       'url': 'fUser.photoURL',
+      'doctorHomeImage':
+          'https://sorensenleather.com/wp-content/uploads/2018/09/NUANCE-shadow-grey-40780.jpg',
       'aboutMe': 'Bio...',
     });
     await StudentServicesApp.sharedPreferences

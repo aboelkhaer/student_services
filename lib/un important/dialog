@@ -1,0 +1,64 @@
+YYDialog _showDialog() {
+    return YYDialog().build(context)
+      ..width = MediaQuery.of(context).size.width * 0.7
+      ..height = MediaQuery.of(context).size.height * 0.2
+      ..widget(
+        Container(
+          margin: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MyText(
+                    text: 'Add post, sure?',
+                    size: 18,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      child: Text('Cancel'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      try {
+                        _getUserFromSharedPref(StudentServicesApp.user);
+                        Navigator.of(context).pop();
+                        _titleController.text = '';
+                        _descriptionController.text = '';
+                        Fluttertoast.showToast(
+                            msg: 'Done', textColor: Colors.green);
+                      } on FirebaseException catch (e) {
+                        Fluttertoast.showToast(
+                            msg: e.message, textColor: Colors.red);
+                      }
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text('Yes'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      )
+      ..show();
+  }

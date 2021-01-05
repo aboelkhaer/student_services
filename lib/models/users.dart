@@ -8,6 +8,7 @@ class Users {
   String phone;
   String email;
   bool admin;
+  String doctorHomeImage;
 
   Users(
       {this.admin,
@@ -15,6 +16,7 @@ class Users {
       this.id,
       this.email,
       this.lastName,
+      this.doctorHomeImage,
       this.phone,
       this.url});
 
@@ -23,6 +25,7 @@ class Users {
     firstName = data['firstName'];
     lastName = data['lastName'];
     phone = data['phone'];
+    doctorHomeImage = data['doctorHomeImage'];
     email = data['email'];
     url = data['url'];
     admin = data['admin'];

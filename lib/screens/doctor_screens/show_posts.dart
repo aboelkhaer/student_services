@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:student_services/models/post_model.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/widgets/my_text.dart';
@@ -22,7 +23,7 @@ class _ShowPostsState extends State<ShowPosts> {
         backgroundColor: mainColor,
         centerTitle: true,
         title: MyText(
-          text: 'Add Post',
+          text: 'Your Posts',
           size: 20,
           color: Colors.white,
           weight: FontWeight.bold,
@@ -39,13 +40,23 @@ class _ShowPostsState extends State<ShowPosts> {
             return Center(child: CircularProgressIndicator());
           }
 
-          return new ListView.builder(
+          return ListView.builder(
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
-              DocumentSnapshot myData = snapshot.data.docs[index];
+              Post post = Post.fromJson(snapshot.data.docs[index].data());
               return ListTile(
-                title: Text(myData.data()['postTitle']),
-                subtitle: Text(myData.data()['postDescription']),
+                title: Text(post.title),
+                subtitle: Text(
+                  post.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    snapshot.data.docs[index].reference.delete();
+                  },
+                ),
               );
             },
           );

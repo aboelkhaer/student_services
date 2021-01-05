@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:student_services/models/doctor_model.dart';
+import 'package:student_services/models/users.dart';
 
 class DoctorDetails extends StatelessWidget {
-  final Doctor doctor;
-  DoctorDetails({this.doctor});
+  final Users users;
+  DoctorDetails({this.users});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +11,7 @@ class DoctorDetails extends StatelessWidget {
         child: Column(
           children: [
             Hero(
-              tag: doctor.doctorImage,
+              tag: users.doctorHomeImage,
               child: Container(
                 height: 300,
                 decoration: BoxDecoration(
@@ -28,13 +28,13 @@ class DoctorDetails extends StatelessWidget {
                         spreadRadius: 1),
                   ],
                   image: DecorationImage(
-                    image: NetworkImage(doctor.doctorImage),
+                    image: NetworkImage(users.doctorHomeImage),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
             ),
-            Text(doctor.doctorTitle),
+            Text(users.firstName),
           ],
         ),
       ),

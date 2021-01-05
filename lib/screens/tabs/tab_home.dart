@@ -1,10 +1,12 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:page_view_indicator/page_view_indicator.dart';
+import 'package:student_services/models/users.dart';
 import 'package:student_services/screens/details/doctor_details.dart';
+import 'package:student_services/utility/capitalize.dart';
+import 'package:student_services/utility/config.dart';
 import 'package:student_services/widgets/static_widgets.dart';
-import 'package:student_services/models/doctor_model.dart';
 import 'package:student_services/widgets/my_text.dart';
 
 class HomeTab extends StatefulWidget {
@@ -13,80 +15,98 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  ValueNotifier<int> _pageViewNotifier = ValueNotifier(2);
-  List<Doctor> doctors;
-
-  void _doctorList() {
-    doctors = List<Doctor>();
-    //  books = List<Book>();
-    doctors.add(Doctor(
-        'DR/Ahmed Mahmoud', 'https://img.youm7.com/large/620151213041930.jpg'));
-    doctors.add(Doctor('DR/Mohamed Ahmed',
-        'https://striveme.com/img/article/2742/5b1bc841e9967.jpg'));
-    doctors.add(Doctor('DR/Mostafa Mahmoud',
-        'https://img.youm7.com/large/201710060136413641.jpg'));
-    doctors.add(Doctor(
-      'DR/Ibrahiem Abdo',
-      'https://www.neshanstyle.com/blog/wp-content/uploads/2019/05/stock-man-in-suit-2-1-1024x576.jpg',
-    ));
-  }
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    _doctorList();
+
+    Query usersStream = StudentServicesApp.firebaseFirestore
+        .collection('users')
+        .where('admin', isEqualTo: true);
 
     return SingleChildScrollView(
       child: Column(
         children: [
           Stack(
             children: [
-              CarouselSlider.builder(
-                options: CarouselOptions(
-                  height: size.height * 0.25,
-                  autoPlay: true,
-                  viewportFraction: 1,
-                ),
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      GestureDetector(
-                          child: Hero(
-                            tag: doctors[index].doctorImage,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image:
-                                      NetworkImage(doctors[index].doctorImage),
-                                  fit: BoxFit.cover,
+              StreamBuilder(
+                  stream: usersStream.snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null)
+                      return CircularProgressIndicator();
+                    return CarouselSlider.builder(
+                      options: CarouselOptions(
+                        height: size.height * 0.25,
+                        autoPlay: true,
+                        viewportFraction: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        Users users =
+                            Users.fromJson(snapshot.data.docs[index].data());
+
+                        return Stack(
+                          children: [
+                            GestureDetector(
+                                child: Hero(
+                                  tag: users.doctorHomeImage,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image:
+                                            NetworkImage(users.doctorHomeImage),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
                                 ),
+                                onTap: () {
+                                  Navigator.push<Widget>(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DoctorDetails(users: users),
+                                    ),
+                                  );
+                                }),
+                            Positioned(
+                              bottom: 35,
+                              left: 30,
+                              child: MyText(
+                                text:
+                                    'Dr. ${capitalize(users.firstName)} ${capitalize(users.lastName)}',
+                                color: Colors.white,
+                                size: 20,
                               ),
                             ),
-                          ),
-                          onTap: () {
-                            Navigator.push<Widget>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DoctorDetails(doctor: doctors[index]),
-                              ),
-                            );
-                          }),
-                      Positioned(
-                        bottom: 35,
-                        left: 30,
-                        child: MyText(
-                          text: doctors[index].doctorTitle,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                itemCount: doctors.length,
+                          ],
+                        );
+                      },
+                      itemCount: snapshot.data.docs.length,
+                    );
+                  }),
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _containerIndicator(),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    _containerIndicator(),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    _containerIndicator(),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    _containerIndicator(),
+                  ],
+                ),
               ),
-              indecator(),
+              // indecator(),
             ],
           ),
           Container(
@@ -104,6 +124,7 @@ class _HomeTabState extends State<HomeTab> {
                     ],
                   ),
                 ),
+                //All books
                 ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -124,33 +145,6 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget indecator() {
-    return Positioned(
-      bottom: 8,
-      left: 0,
-      right: 0,
-      child: PageViewIndicator(
-        pageIndexNotifier: _pageViewNotifier,
-        length: doctors.length,
-        indicatorPadding: EdgeInsets.all(4),
-        normalBuilder: (animationController, index) => Circle(
-          size: 3.0,
-          color: Colors.grey[200],
-        ),
-        highlightedBuilder: (animationController, index) => ScaleTransition(
-          scale: CurvedAnimation(
-            parent: animationController,
-            curve: Curves.ease,
-          ),
-          child: Circle(
-            size: 3.0,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
@@ -239,6 +233,15 @@ class _HomeTabState extends State<HomeTab> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _containerIndicator() {
+    return Container(
+      width: 4,
+      height: 4,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50), color: Colors.white),
     );
   }
 }

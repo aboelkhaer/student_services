@@ -55,7 +55,9 @@ class Dashboard extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 16, left: 8),
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, 'AddBook');
+                    },
                     child: container(
                         size.height * 0.15, size.width * 0.4, 'Add Book'),
                   ),
@@ -63,7 +65,9 @@ class Dashboard extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 8, left: 16),
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, 'ShowBooks');
+                    },
                     child: container(
                         size.height * 0.15, size.width * 0.4, 'Show Books'),
                   ),

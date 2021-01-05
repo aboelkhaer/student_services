@@ -3,8 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_services/screens/details/post_details.dart';
+import 'package:student_services/screens/doctor_screens/add_book.dart';
 import 'package:student_services/screens/doctor_screens/add_post.dart';
 import 'package:student_services/screens/doctor_screens/dashboard.dart';
+import 'package:student_services/screens/doctor_screens/show_books.dart';
 import 'package:student_services/screens/doctor_screens/show_posts.dart';
 import 'package:student_services/screens/signin.dart';
 import 'package:student_services/screens/signup.dart';
@@ -62,6 +64,8 @@ class StudentsServices extends StatelessWidget {
           'AddPost': (context) => AddPost(),
           'ShowPosts': (context) => ShowPosts(),
           'PostDetails': (context) => PostDetails(),
+          'AddBook': (context) => AddBook(),
+          'ShowBooks': (context) => ShowBooks(),
         },
       ),
     );

@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
@@ -32,49 +36,94 @@ class _ProfileTabState extends State<ProfileTab> {
   String lastName = '';
   String phone = '';
   String aboutMe = '';
+  File _imageFile;
+  String userImageUrl = '';
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-    var uid = StudentServicesApp.auth.currentUser.uid;
-    Future<DocumentSnapshot> myInfo =
-        FirebaseFirestore.instance.collection('users').doc(uid).get();
+    // var uid = StudentServicesApp.auth.currentUser.uid;
+    // Future<DocumentSnapshot> myInfo =
+    //     FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       body: _isLoading
-          ? CircularProgressIndicator()
+          ? Center(child: CircularProgressIndicator())
           : Container(
               margin: EdgeInsets.only(
-                left: 5,
-                right: 5,
+                left: 10,
+                right: 10,
               ),
               alignment: Alignment.center,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Container(
-                      height: size.height * 0.12,
-                      width: size.width,
-                      alignment: Alignment.center,
-                      child: FutureBuilder(
-                          future: myInfo,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              return MyText(
-                                text:
-                                    '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
-                                size: 45,
-                                weight: FontWeight.w700,
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }),
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: mainColor,
+                          backgroundImage:
+                              _imageFile == null ? null : FileImage(_imageFile),
+                          radius: size.width * 0.15,
+                        ),
+                        Positioned(
+                          right: 0,
+                          bottom: -3,
+                          child: GestureDetector(
+                            onTap: _selectAndPickImage,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: Icon(Icons.camera_alt_outlined,
+                                  size: 35, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                    // GestureDetector(
+                    //   onTap: _selectAndPickImage,
+                    //   child: CircleAvatar(
+                    //     backgroundColor: Colors.transparent,
+                    //     backgroundImage:
+                    //         _imageFile == null ? null : FileImage(_imageFile),
+                    //     radius: 50,
+                    //     child: _imageFile == null
+                    //         ? Icon(
+                    //             Icons.add_photo_alternate,
+                    //             size: size.width * 0.15,
+                    //             color: Colors.grey,
+                    //           )
+                    //         : null,
+                    //   ),
+                    // ),
+                    // Container(
+                    //   height: size.height * 0.12,
+                    //   width: size.width,
+                    //   alignment: Alignment.center,
+                    //   child: FutureBuilder(
+                    //       future: myInfo,
+                    //       builder: (context, snapshot) {
+                    //         if (snapshot.connectionState ==
+                    //             ConnectionState.done) {
+                    //           return MyText(
+                    //             text:
+                    //                 '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
+                    //             size: 45,
+                    //             weight: FontWeight.w700,
+                    //           );
+                    //         } else {
+                    //           return Container();
+                    //         }
+                    //       }),
+                    // ),
                     SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
                     Form(
                       key: _formKey,
@@ -114,6 +163,8 @@ class _ProfileTabState extends State<ProfileTab> {
                                             decoration: textFormDecoration(
                                                 'First name...'),
                                             keyboardType: TextInputType.text,
+                                            textInputAction:
+                                                TextInputAction.next,
                                             validator: (value) {
                                               return value.length > 0
                                                   ? null
@@ -167,6 +218,8 @@ class _ProfileTabState extends State<ProfileTab> {
                                             },
                                             decoration: textFormDecoration(
                                                 'Last name...'),
+                                            textInputAction:
+                                                TextInputAction.next,
                                             keyboardType: TextInputType.text,
                                             controller: _lastNameController,
                                             onChanged: (value) {
@@ -210,6 +263,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                       : 'Phone is empty';
                                 },
                                 decoration: textFormDecoration('Your phone...'),
+                                textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.phone,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(11),
@@ -244,6 +298,7 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                               child: TextFormField(
                                 decoration: textFormDecoration('Bio...'),
+                                textInputAction: TextInputAction.done,
                                 validator: (value) {
                                   return value.length > 0
                                       ? null
@@ -280,6 +335,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             child: MyText(
                               text: 'Update',
                               color: Colors.white,
+                              weight: FontWeight.bold,
                             ),
                             onPressed: () async {
                               if (_formKey.currentState.validate()) {
@@ -298,6 +354,44 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
+  Future<void> _selectAndPickImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _imageFile = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<void> uploadAndSaveImage() {
+    if (_imageFile == null) {
+      return Fluttertoast.showToast(
+        msg: 'Please select an image.',
+        textColor: Colors.red,
+      );
+    } else {
+      uploadToStorage();
+    }
+  }
+
+  uploadToStorage() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var uid = StudentServicesApp.auth.currentUser.uid;
+    String imageFileName = uid;
+
+    final Reference reference =
+        FirebaseStorage.instance.ref().child(imageFileName);
+    await reference.putFile(_imageFile);
+    return await reference.getDownloadURL().then((urlImage) {
+      userImageUrl = urlImage;
+    });
+  }
+
   updateData() {
     if (_formKey.currentState.validate()) {
       _firstNameFocusNode.unfocus();
@@ -309,6 +403,8 @@ class _ProfileTabState extends State<ProfileTab> {
       });
       try {
         var uid = StudentServicesApp.auth.currentUser.uid;
+        uploadAndSaveImage();
+
         StudentServicesApp.firebaseFirestore
             .collection('users')
             .doc(uid)
@@ -318,16 +414,17 @@ class _ProfileTabState extends State<ProfileTab> {
           'phone': phone,
           'aboutMe': aboutMe,
         }).then((data) async {
-          // await StudentServicesApp.sharedPreferences
-          //     .setString('firstName', firstName);
-          // await StudentServicesApp.sharedPreferences
-          //     .setString('lastName', lastName);
-          // await StudentServicesApp.sharedPreferences.setString('phone', phone);
-          // await StudentServicesApp.sharedPreferences
-          //     .setString('aboutMe', aboutMe);
+          await StudentServicesApp.sharedPreferences
+              .setString('firstName', firstName);
+          await StudentServicesApp.sharedPreferences
+              .setString('lastName', lastName);
+          await StudentServicesApp.sharedPreferences.setString('phone', phone);
+          await StudentServicesApp.sharedPreferences
+              .setString('aboutMe', aboutMe);
           setState(() {
             _isLoading = false;
           });
+
           Fluttertoast.showToast(msg: 'Updated Successfully.');
         });
       } on FirebaseException catch (e) {

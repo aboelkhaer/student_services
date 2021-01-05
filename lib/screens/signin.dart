@@ -176,9 +176,9 @@ class _SignInState extends State<SignIn> {
                   email: _userEmailController.text,
                   password: _userPasswordController.text))
           .user;
-      // if (!StudentServicesApp.user.emailVerified) {
-      //   await StudentServicesApp.user.sendEmailVerification();
-      // }
+      if (!StudentServicesApp.user.emailVerified) {
+        await StudentServicesApp.user.sendEmailVerification();
+      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
         return HomeScreen(user: StudentServicesApp.user);
       }));
