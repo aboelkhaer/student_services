@@ -2,10 +2,13 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:student_services/models/book_model.dart';
 import 'package:student_services/models/users.dart';
+import 'package:student_services/screens/details/book_details.dart';
 import 'package:student_services/screens/details/doctor_details.dart';
 import 'package:student_services/utility/capitalize.dart';
 import 'package:student_services/utility/config.dart';
+import 'package:student_services/widgets/books_list.dart';
 import 'package:student_services/widgets/static_widgets.dart';
 import 'package:student_services/widgets/my_text.dart';
 
@@ -22,6 +25,9 @@ class _HomeTabState extends State<HomeTab> {
     Query usersStream = StudentServicesApp.firebaseFirestore
         .collection('users')
         .where('admin', isEqualTo: true);
+    Query myBooks = StudentServicesApp.firebaseFirestore
+        .collection('books')
+        .orderBy('time', descending: true);
 
     return SingleChildScrollView(
       child: Column(
@@ -51,8 +57,11 @@ class _HomeTabState extends State<HomeTab> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image:
-                                            NetworkImage(users.doctorHomeImage),
+                                        image: NetworkImage(
+                                          users.doctorHomeImage == null
+                                              ? 'https://i.etsystatic.com/5651657/d/il/a968f6/2052052472/il_340x270.2052052472_ffey.jpg?version=0'
+                                              : users.doctorHomeImage,
+                                        ),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -106,7 +115,6 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
               ),
-              // indecator(),
             ],
           ),
           Container(
@@ -125,21 +133,32 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 //All books
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: 1,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          _drawSingleRow(size, 1),
-                          _drawSingleRow(size, 2),
-                          _drawSingleRow(size, 3),
-                          SizedBox(
-                            height: 40,
-                          ),
-                        ],
-                      );
+                StreamBuilder<QuerySnapshot>(
+                    stream: myBooks.snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Some thing went error.'),
+                        );
+                      }
+                      return ListView.builder(
+                          padding: EdgeInsets.only(bottom: 40),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            Book book =
+                                Book.fromJson(snapshot.data.docs[index].data());
+
+                            return Column(
+                              children: [
+                                _drawSingleRow(book),
+                              ],
+                            );
+                          });
                     })
               ],
             ),
@@ -149,87 +168,101 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _drawSingleRow(size, int num) {
+  Widget _drawSingleRow(Book book) {
+    var size = MediaQuery.of(context).size;
     // enter book model    Book book
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        elevation: 7,
-        shadowColor: Colors.black,
-        child: InkWell(
-          onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) {
-            //       return SinglePost(post);
-            //     },
-            //   ),
-            // );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              children: [
-                SizedBox(
-                  height: size.height * 0.15,
-                  width: size.width * 0.23,
-                  child: Image(
-                    image: ExactAssetImage('assets/images/book$num.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText(
-                            text: 'Hello World',
-                            size: 18,
-                            weight: FontWeight.w600,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          MyText(
-                            text: 'level 1',
-                            size: 13,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          MyText(
-                            text: 'term 2',
-                            size: 13,
-                            color: Colors.grey,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText(
-                            text: 'DR/Mohamed Ahmed',
-                            color: Colors.grey,
-                            size: 14,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    return Container(
+      width: size.width * 0.95,
+      height: size.height * 0.28,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return BookDetails(
+                  book: book,
+                );
+              },
             ),
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.only(right: 10),
+          child: Row(
+            children: [
+              singleBook(context, book),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Flexible(
+                            child: MyText(
+                              text: book.title,
+                              size: 17,
+                              weight: FontWeight.bold,
+                              align: TextAlign.start,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: MyText(
+                            text:
+                                'By Dr. ${capitalize(book.userFirstName)} ${capitalize(book.userLastName)}',
+                            size: 17,
+                            color: Colors.grey,
+                            weight: FontWeight.w500,
+                            align: TextAlign.start,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Flexible(
+                          child: MyText(
+                            text: '${book.price} EGP',
+                            size: 18,
+                            color: Colors.blue,
+                            weight: FontWeight.w500,
+                            align: TextAlign.start,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 40,
+                        right: 16,
+                      ),
+                      child: SizedBox(
+                        height: 40,
+                        width: double.infinity,
+                        child: RaisedButton(
+                          child: MyText(
+                            text: 'Book Now',
+                            color: Colors.white,
+                            weight: FontWeight.bold,
+                          ),
+                          onPressed: () async {},
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -16,6 +16,7 @@ class _AddBookState extends State<AddBook> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _bookUrlController = TextEditingController();
   TextEditingController _bookDescriptionController = TextEditingController();
+  TextEditingController _bookPriceController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -24,6 +25,7 @@ class _AddBookState extends State<AddBook> {
     _bookUrlController.dispose();
     _titleController.dispose();
     _bookDescriptionController.dispose();
+    _bookPriceController.dispose();
     super.dispose();
   }
 
@@ -57,14 +59,35 @@ class _AddBookState extends State<AddBook> {
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    return value.length > 0 ? null : 'Title is empty';
-                  },
-                  controller: _titleController,
-                  keyboardType: TextInputType.text,
-                  decoration: textFormDecoration('Title'),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          return value.length > 0 ? null : 'Title is empty';
+                        },
+                        controller: _titleController,
+                        keyboardType: TextInputType.text,
+                        decoration: textFormDecoration('Title'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 14,
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          return value.length > 0 ? null : 'Price is empty';
+                        },
+                        controller: _bookPriceController,
+                        keyboardType: TextInputType.number,
+                        decoration: textFormDecoration('Price'),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 15,
@@ -235,6 +258,7 @@ class _AddBookState extends State<AddBook> {
       'description': _bookDescriptionController.text.trim(),
       'userUID': fUser.uid,
       'userFirstName': firstName,
+      'price': _bookPriceController.text.trim(),
       'bookLevel': levelValue,
       'bookTerm': termValue,
       'userLastName': lastName,

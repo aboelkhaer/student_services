@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: MyText(
           text: 'Student Service',
@@ -61,11 +62,18 @@ class _HomeScreenState extends State<HomeScreen>
           controller: _tabController,
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-            ),
-            onPressed: () {},
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.import_contacts,
+          //   ),
+          //   onPressed: () {},
+          // ),
+
+          Icon(
+            Icons.import_contacts,
+          ),
+          SizedBox(
+            width: 14,
           ),
         ],
       ),

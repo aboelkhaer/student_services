@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
@@ -42,10 +42,6 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    // var uid = StudentServicesApp.auth.currentUser.uid;
-    // Future<DocumentSnapshot> myInfo =
-    //     FirebaseFirestore.instance.collection('users').doc(uid).get();
-
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -138,19 +134,6 @@ class _ProfileTabState extends State<ProfileTab> {
                               Expanded(
                                 child: Column(
                                   children: [
-                                    // First name
-                                    Container(
-                                      margin:
-                                          EdgeInsets.only(bottom: 5, left: 10),
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'First Name',
-                                        style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
                                     Container(
                                       child: Theme(
                                         data: Theme.of(context).copyWith(
@@ -189,19 +172,6 @@ class _ProfileTabState extends State<ProfileTab> {
                               Expanded(
                                 child: Column(
                                   children: [
-                                    // Last name
-                                    Container(
-                                      margin:
-                                          EdgeInsets.only(bottom: 5, left: 10),
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'Last Name',
-                                        style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
                                     Container(
                                       child: Theme(
                                         data: Theme.of(context).copyWith(
@@ -235,21 +205,8 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                             ],
                           ),
-
-                          // phone
-                          Container(
-                            margin: EdgeInsets.only(
-                              left: 10,
-                              top: 25,
-                              bottom: 5,
-                            ),
-                            child: Text(
-                              'Phone',
-                              style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                          SizedBox(
+                            height: 16,
                           ),
                           Container(
                             child: Theme(
@@ -257,6 +214,9 @@ class _ProfileTabState extends State<ProfileTab> {
                                 primaryColor: mainColor,
                               ),
                               child: TextFormField(
+                                onChanged: (value) {
+                                  phone = value;
+                                },
                                 validator: (value) {
                                   return value.length > 0
                                       ? null
@@ -277,19 +237,8 @@ class _ProfileTabState extends State<ProfileTab> {
                               right: 10,
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.only(
-                              left: 10,
-                              top: 25,
-                              bottom: 5,
-                            ),
-                            child: Text(
-                              'About Me',
-                              style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                          SizedBox(
+                            height: 16,
                           ),
                           Container(
                             child: Theme(
@@ -354,6 +303,28 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
+// bool _isAdmin;
+// Future isAdmin() async {
+//   Users users;
+//   await FutureBuilder(
+//             future: users.getUsereData(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.done) {
+//                 _isAdmin = users.admin ?? false;
+
+//               }
+//             },
+//           );
+// }
+// Book book;
+// updateAdminData() {
+//    var uid = StudentServicesApp.auth.currentUser.uid;
+//   if(_isAdmin) {
+//     StudentServicesApp.firebaseFirestore.collection('books').doc().
+
+//   }
+// }
+
   Future<void> _selectAndPickImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
@@ -366,7 +337,7 @@ class _ProfileTabState extends State<ProfileTab> {
     });
   }
 
-  Future<void> uploadAndSaveImage() {
+  uploadAndSaveImage() {
     if (_imageFile == null) {
       return Fluttertoast.showToast(
         msg: 'Please select an image.',
@@ -393,7 +364,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   updateData() {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState.validate() && _imageFile != null) {
       _firstNameFocusNode.unfocus();
       _lastNameFocusNode.unfocus();
       _phoneFocusNode.unfocus();
@@ -425,11 +396,17 @@ class _ProfileTabState extends State<ProfileTab> {
             _isLoading = false;
           });
 
-          Fluttertoast.showToast(msg: 'Updated Successfully.');
+          Fluttertoast.showToast(
+              msg: 'Updated Successfully.', textColor: Colors.green);
         });
       } on FirebaseException catch (e) {
         print(e.message);
       }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Put your image, please.',
+        textColor: Colors.red,
+      );
     }
   }
 }

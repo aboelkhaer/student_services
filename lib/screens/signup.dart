@@ -258,6 +258,7 @@ class _SignUpState extends State<SignUp> {
       'phone': _userPhoneController.text,
       'admin': false,
       'url': 'fUser.photoURL',
+      'lib': false,
       'doctorHomeImage':
           'https://sorensenleather.com/wp-content/uploads/2018/09/NUANCE-shadow-grey-40780.jpg',
       'aboutMe': 'Bio...',

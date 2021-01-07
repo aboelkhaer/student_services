@@ -44,13 +44,12 @@ class _ShowBooksState extends State<ShowBooks> {
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
               Book book = Book.fromJson(snapshot.data.docs[index].data());
-              DocumentSnapshot myData = snapshot.data.docs[index];
               return ListTile(
                 title: Text(book.title),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
-                    myData.reference.delete();
+                    snapshot.data.docs[index].reference.delete();
                   },
                 ),
               );

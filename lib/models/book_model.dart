@@ -7,6 +7,7 @@ class Book {
       term,
       userUID,
       userFirstName,
+      price,
       userLastName,
       bookImageUrl;
   Timestamp time;
@@ -16,6 +17,7 @@ class Book {
     this.level,
     this.term,
     this.userUID,
+    this.price,
     this.description,
     this.userFirstName,
     this.userLastName,
@@ -23,6 +25,7 @@ class Book {
   });
   Book.fromJson(Map<String, dynamic> json) {
     title = json['title'];
+    price = json['price'];
     description = json['description'];
     level = json['bookLevel'];
     term = json['bookTerm'];

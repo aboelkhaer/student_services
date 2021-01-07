@@ -119,14 +119,6 @@ class _SignInState extends State<SignIn> {
                             color: Colors.white,
                             weight: FontWeight.bold,
                           ),
-                          // Text(
-                          //   'Sign In',
-                          //   style: TextStyle(
-                          //     color: Colors.white,
-                          //     fontSize: 16,
-                          //     letterSpacing: 1,
-                          //   ),
-                          // ),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               _signInEmailPassword();
