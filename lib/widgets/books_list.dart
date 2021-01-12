@@ -91,15 +91,15 @@ Widget singleBook(context, Book book) {
           height: _size.height * 0.25,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            // color: Colors.black,
-            image: DecorationImage(
-              image: NetworkImage(
-                book.bookImageUrl == null
-                    ? 'https://i.pinimg.com/236x/c6/e1/ce/c6e1cef909c51f9d4f134c0817ec0c6e.jpg'
-                    : book.bookImageUrl,
-              ),
-              fit: BoxFit.cover,
-            ),
+            color: Colors.black,
+            // image: DecorationImage(
+            //   image: NetworkImage(
+            //     book.bookImageUrl == null
+            //         ? 'https://i.pinimg.com/236x/c6/e1/ce/c6e1cef909c51f9d4f134c0817ec0c6e.jpg'
+            //         : book.bookImageUrl,
+            //   ),
+            //   fit: BoxFit.cover,
+            // ),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -108,6 +108,16 @@ Widget singleBook(context, Book book) {
                 offset: Offset(0, 3),
               ),
             ],
+          ),
+          child: Image.network(
+            book.bookImageUrl == null
+                ? 'https://i.pinimg.com/236x/c6/e1/ce/c6e1cef909c51f9d4f134c0817ec0c6e.jpg'
+                : book.bookImageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (BuildContext context, Object exception,
+                StackTrace stackTrace) {
+              return Container();
+            },
           ),
         ),
       ),

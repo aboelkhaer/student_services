@@ -303,28 +303,6 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-// bool _isAdmin;
-// Future isAdmin() async {
-//   Users users;
-//   await FutureBuilder(
-//             future: users.getUsereData(),
-//             builder: (context, snapshot) {
-//               if (snapshot.connectionState == ConnectionState.done) {
-//                 _isAdmin = users.admin ?? false;
-
-//               }
-//             },
-//           );
-// }
-// Book book;
-// updateAdminData() {
-//    var uid = StudentServicesApp.auth.currentUser.uid;
-//   if(_isAdmin) {
-//     StudentServicesApp.firebaseFirestore.collection('books').doc().
-
-//   }
-// }
-
   Future<void> _selectAndPickImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 

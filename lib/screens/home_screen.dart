@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:student_services/screens/tabs/tab_home.dart';
 import 'package:student_services/screens/tabs/tab_explore.dart';
 import 'package:student_services/screens/tabs/tab_profile.dart';
-import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/widgets/my_text.dart';
 import 'package:student_services/widgets/drawer.dart';
@@ -62,19 +61,7 @@ class _HomeScreenState extends State<HomeScreen>
           controller: _tabController,
         ),
         actions: [
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.import_contacts,
-          //   ),
-          //   onPressed: () {},
-          // ),
-
-          Icon(
-            Icons.import_contacts,
-          ),
-          SizedBox(
-            width: 14,
-          ),
+          //TODO
         ],
       ),
       drawer: MyDrawer(),

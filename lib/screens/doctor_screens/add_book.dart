@@ -220,7 +220,9 @@ class _AddBookState extends State<AddBook> {
                         weight: FontWeight.bold,
                       ),
                       onLongPress: () async {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState.validate() &&
+                            levelValue != null &&
+                            termValue != null) {
                           try {
                             _addBookToDatabase(StudentServicesApp.user);
                             Navigator.of(context).pop();

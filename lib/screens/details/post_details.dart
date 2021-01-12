@@ -86,6 +86,7 @@ class PostDetails extends StatelessWidget {
                                     width: double.infinity,
                                     child: Image.network(
                                       post.postImageUrl,
+                                      fit: BoxFit.cover,
                                       errorBuilder: (BuildContext context,
                                           Object exception,
                                           StackTrace stackTrace) {

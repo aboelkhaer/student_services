@@ -260,7 +260,7 @@ class _SignUpState extends State<SignUp> {
       'url': 'fUser.photoURL',
       'lib': false,
       'doctorHomeImage':
-          'https://sorensenleather.com/wp-content/uploads/2018/09/NUANCE-shadow-grey-40780.jpg',
+          'https://i.pinimg.com/originals/e8/cd/6c/e8cd6c3c3e6fd53e4eedbfb130c8e7f0.gif',
       'aboutMe': 'Bio...',
     });
     await StudentServicesApp.sharedPreferences

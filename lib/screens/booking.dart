@@ -1,35 +1,35 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_services/models/book_model.dart';
+import 'package:student_services/utility/capitalize.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/utility/styles.dart';
 import 'package:student_services/widgets/my_text.dart';
 
-class AddPost extends StatefulWidget {
+class BookingScreen extends StatefulWidget {
+  final Book book;
+
+  const BookingScreen({Key key, this.book}) : super(key: key);
+
   @override
-  _AddPostState createState() => _AddPostState();
+  _BookingScreenState createState() => _BookingScreenState();
 }
 
-class _AddPostState extends State<AddPost> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _postUrlController = TextEditingController();
+class _BookingScreenState extends State<BookingScreen> {
+  TextEditingController _userFullNameController = TextEditingController();
+  TextEditingController _userAdressController = TextEditingController();
+  TextEditingController _userPhoneController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
+    _userFullNameController.dispose();
+    _userAdressController.dispose();
+    _userPhoneController.dispose();
     super.dispose();
-    _descriptionController.dispose();
-    _titleController.dispose();
-    _postUrlController.dispose();
-  }
-
-  @override
-  void initState() {
-    readSharedPref();
-    super.initState();
   }
 
   @override
@@ -40,15 +40,15 @@ class _AddPostState extends State<AddPost> {
         backgroundColor: mainColor,
         centerTitle: true,
         title: MyText(
-          text: 'Add Post',
+          text: 'Booking',
           size: 20,
           color: Colors.white,
           weight: FontWeight.bold,
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(16.0),
         alignment: Alignment.center,
+        margin: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -57,36 +57,38 @@ class _AddPostState extends State<AddPost> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   validator: (value) {
-                    return value.length > 0 ? null : 'Title is empty';
+                    return value.length > 0 ? null : 'Full Name is empty';
                   },
-                  controller: _titleController,
+                  controller: _userFullNameController,
                   keyboardType: TextInputType.text,
-                  decoration: textFormDecoration('Title'),
+                  decoration: textFormDecoration('Full Name'),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
-                  // validator: (value) {
-                  //   return value.length > 0 ? null : 'Image url is empty';
-                  // },
-                  controller: _postUrlController,
-                  keyboardType: TextInputType.url,
-                  decoration: textFormDecoration('Image Url'),
+                  validator: (value) {
+                    return value.length > 0 ? null : 'Adress is empty';
+                  },
+                  controller: _userAdressController,
+                  keyboardType: TextInputType.text,
+                  decoration: textFormDecoration('Adress'),
                 ),
                 SizedBox(
-                  height: 30,
+                  height: 15,
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.done,
                   validator: (value) {
-                    return value.length > 0 ? null : 'Description is empty';
+                    return value.length > 0 ? null : 'Phone is empty';
                   },
-                  keyboardType: TextInputType.multiline,
-                  maxLines: 8,
-                  controller: _descriptionController,
-                  decoration: textFormDecoration('Description'),
+                  controller: _userPhoneController,
+                  keyboardType: TextInputType.number,
+                  decoration: textFormDecoration('Phone'),
+                ),
+                SizedBox(
+                  height: 15,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
@@ -100,20 +102,21 @@ class _AddPostState extends State<AddPost> {
                     width: double.infinity,
                     child: RaisedButton(
                       onPressed: () {
-                        Fluttertoast.showToast(msg: 'Long press to add post.');
+                        Fluttertoast.showToast(msg: 'Long press to Booking.');
                       },
                       child: MyText(
-                        text: 'Send',
+                        text: 'Book',
                         color: Colors.white,
                         weight: FontWeight.bold,
                       ),
                       onLongPress: () async {
                         if (_formKey.currentState.validate()) {
                           try {
-                            _addPostToDatabase(StudentServicesApp.user);
+                            _addBookingToDatabase(StudentServicesApp.user);
                             Navigator.of(context).pop();
-                            _titleController.text = '';
-                            _descriptionController.text = '';
+                            _userFullNameController.text = '';
+                            _userAdressController.text = '';
+                            _userPhoneController.text = '';
                             Fluttertoast.showToast(
                                 msg: 'Done', textColor: Colors.green);
                           } on FirebaseException catch (e) {
@@ -138,30 +141,30 @@ class _AddPostState extends State<AddPost> {
     );
   }
 
-  // Users users = Users();
-
-  Future _addPostToDatabase(User fUser) async {
-    StudentServicesApp.firebaseFirestore.collection('posts').add({
-      'postTitle': _titleController.text.trim(),
-      'postDescription': _descriptionController.text.trim(),
-      'userUID': fUser.uid,
-      'userFirstName': firstName,
-      'userLastName': lastName,
-      'postImageUrl': _postUrlController.text.trim(),
+  Future _addBookingToDatabase(User fUser) async {
+    StudentServicesApp.firebaseFirestore.collection('orders').add({
+      'customerName': _userFullNameController.text.trim(),
+      'customerAdress': _userAdressController.text.trim(),
+      'customerPhone': _userPhoneController.text.trim(),
+      'customerUID': fUser.uid,
+      'bookTitle': widget.book.title,
+      'bookLevel': widget.book.level,
+      'bookTerm': widget.book.term,
+      'bookAuthor':
+          '${capitalize(widget.book.userFirstName)} ${capitalize(widget.book.userLastName)}',
+      'authorUID': widget.book.userUID,
       'time': DateTime.now(),
     });
   }
-
-  String firstName = '';
-  String lastName = '';
-
-  readSharedPref() async {
-    StudentServicesApp.sharedPreferences =
-        await SharedPreferences.getInstance();
-    firstName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userFirstName);
-    lastName = StudentServicesApp.sharedPreferences
-        .getString(StudentServicesApp.userLastName);
-    setState(() {});
-  }
 }
+// child: Text(widget.book.title),
+
+// IconButton(
+//                       icon: Icon(
+//                         Icons.arrow_back_ios,
+//                         size: 30,
+//                       ),
+//                       onPressed: () {
+//                         Navigator.pop(context);
+//                       },
+//                     ),

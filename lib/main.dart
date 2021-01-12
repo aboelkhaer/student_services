@@ -2,15 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:student_services/screens/change_language.dart';
 import 'package:student_services/screens/details/book_details.dart';
 import 'package:student_services/screens/details/post_details.dart';
 import 'package:student_services/screens/doctor_screens/add_book.dart';
 import 'package:student_services/screens/doctor_screens/add_post.dart';
 import 'package:student_services/screens/doctor_screens/dashboard.dart';
+import 'package:student_services/screens/libarian_screens/level_four.dart';
+import 'package:student_services/screens/libarian_screens/level_one.dart';
+import 'package:student_services/screens/libarian_screens/level_three.dart';
+import 'package:student_services/screens/libarian_screens/level_two.dart';
+import 'package:student_services/screens/libarian_screens/libarian.dart';
 import 'package:student_services/screens/doctor_screens/show_books.dart';
 import 'package:student_services/screens/doctor_screens/show_posts.dart';
 import 'package:student_services/screens/signin.dart';
 import 'package:student_services/screens/signup.dart';
+import 'package:student_services/screens/student_books.dart';
 import 'package:student_services/screens/welcome_screen.dart';
 import 'package:student_services/screens/home_screen.dart';
 import 'package:student_services/utility/app_theme.dart';
@@ -21,6 +28,7 @@ import 'package:student_services/screens/change_password.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   StudentServicesApp.sharedPreferences = await SharedPreferences.getInstance();
 
   bool seen = StudentServicesApp.sharedPreferences.getBool('seen');
@@ -68,6 +76,13 @@ class StudentsServices extends StatelessWidget {
           'AddBook': (context) => AddBook(),
           'ShowBooks': (context) => ShowBooks(),
           'BookDetails': (context) => BookDetails(),
+          'LibarianScreen': (context) => LibarianScreen(),
+          'LevelOne': (context) => LevelOne(),
+          'LevelTwo': (context) => LevelTwo(),
+          'LevelThree': (context) => LevelThree(),
+          'LevelFour': (context) => LevelFour(),
+          'StudentBooks': (context) => StudentBooks(),
+          'ChangeLanguage': (context) => ChangeLanguage(),
         },
       ),
     );
