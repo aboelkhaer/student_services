@@ -37,10 +37,10 @@ class _HomeScreenState extends State<HomeScreen>
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: MyText(
-          text: 'Student Service',
+          text: 'Students Services',
           color: Colors.white,
           weight: FontWeight.w500,
-          size: 18,
+          size: 19,
         ),
         centerTitle: false,
         backgroundColor: mainColor,
@@ -61,7 +61,12 @@ class _HomeScreenState extends State<HomeScreen>
           controller: _tabController,
         ),
         actions: [
-          //TODO
+          Icon(
+            Icons.menu_book,
+          ),
+          SizedBox(
+            width: 20,
+          ),
         ],
       ),
       drawer: MyDrawer(),

@@ -59,9 +59,10 @@ class _ProfileTabState extends State<ProfileTab> {
                     Stack(
                       children: [
                         CircleAvatar(
-                          backgroundColor: mainColor,
-                          backgroundImage:
-                              _imageFile == null ? null : FileImage(_imageFile),
+                          backgroundColor: Color(0xFFFFFFFF),
+                          backgroundImage: _imageFile == null
+                              ? ExactAssetImage('assets/images/avatar.png')
+                              : FileImage(_imageFile),
                           radius: size.width * 0.15,
                         ),
                         Positioned(
@@ -370,9 +371,11 @@ class _ProfileTabState extends State<ProfileTab> {
           await StudentServicesApp.sharedPreferences.setString('phone', phone);
           await StudentServicesApp.sharedPreferences
               .setString('aboutMe', aboutMe);
+
           setState(() {
             _isLoading = false;
           });
+          _imageFile = null;
 
           Fluttertoast.showToast(
               msg: 'Updated Successfully.', textColor: Colors.green);

@@ -23,7 +23,7 @@ import 'package:student_services/screens/home_screen.dart';
 import 'package:student_services/utility/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:student_services/utility/config.dart';
-import 'package:student_services/screens/change_password.dart';
+import 'package:student_services/screens/reset_password.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +68,7 @@ class StudentsServices extends StatelessWidget {
           'SignIn': (context) => SignIn(),
           'SignUp': (context) => SignUp(),
           'HomeScreen': (context) => HomeScreen(),
-          'ChangePassword': (context) => ChangePasswordScreen(),
+          'PasswordResetScreen': (context) => PasswordResetScreen(),
           'Dashboard': (context) => Dashboard(),
           'AddPost': (context) => AddPost(),
           'ShowPosts': (context) => ShowPosts(),
@@ -82,7 +82,6 @@ class StudentsServices extends StatelessWidget {
           'LevelThree': (context) => LevelThree(),
           'LevelFour': (context) => LevelFour(),
           'StudentBooks': (context) => StudentBooks(),
-          'ChangeLanguage': (context) => ChangeLanguage(),
         },
       ),
     );

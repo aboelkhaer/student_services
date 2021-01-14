@@ -68,7 +68,11 @@ class _MyDrawerState extends State<MyDrawer> {
                             future: _getUserProfileImage(context, uid),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
+                                      ConnectionState.waiting ||
+                                  snapshot.connectionState ==
+                                      ConnectionState.active ||
+                                  snapshot.connectionState ==
+                                      ConnectionState.none) {
                                 return Center(
                                     child: CircularProgressIndicator());
                               }
@@ -78,34 +82,34 @@ class _MyDrawerState extends State<MyDrawer> {
                                 return Container(
                                   width: 70,
                                   height: 70,
-                                  // decoration: BoxDecoration(
-                                  //   image: DecorationImage(
-                                  //     image: snapshot.data == null
-                                  //         ? AssetImage(
-                                  //             'assets/images/avatar.png')
-                                  //         : snapshot.data,
-                                  //   ),
-                                  //   borderRadius: BorderRadius.circular(50),
-                                  // ),
-                                  child: snapshot.data == null
-                                      ? Image(
-                                          image: ExactAssetImage(
-                                              'assets/images/avatar.png'),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.network(
-                                          snapshot.data,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (BuildContext context,
-                                              Object exception,
-                                              StackTrace stackTrace) {
-                                            return Image(
-                                              image: ExactAssetImage(
-                                                  'assets/images/avatar.png'),
-                                              fit: BoxFit.cover,
-                                            );
-                                          },
-                                        ),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: snapshot.data == null
+                                          ? AssetImage(
+                                              'assets/images/avatar.png')
+                                          : snapshot.data,
+                                    ),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  // child: snapshot.data == null
+                                  //     ? Image(
+                                  //         image: ExactAssetImage(
+                                  //             'assets/images/avatar.png'),
+                                  //         fit: BoxFit.cover,
+                                  //       )
+                                  //     : Image.network(
+                                  //         snapshot.data,
+                                  //         fit: BoxFit.cover,
+                                  //         errorBuilder: (BuildContext context,
+                                  //             Object exception,
+                                  //             StackTrace stackTrace) {
+                                  //           return Image(
+                                  //             image: ExactAssetImage(
+                                  //                 'assets/images/avatar.png'),
+                                  //             fit: BoxFit.cover,
+                                  //           );
+                                  //         },
+                                  //       ),
                                 );
                               }
                               if (snapshot.connectionState ==
@@ -184,24 +188,6 @@ class _MyDrawerState extends State<MyDrawer> {
                   thickness: 0.18,
                   color: mainColor,
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, 'ChangeLanguage');
-                  },
-                  child: ListTile(
-                    title: MyText(
-                      size: drawerTextSize,
-                      text: 'Change Language',
-                      weight: FontWeight.bold,
-                      align: TextAlign.start,
-                    ),
-                    leading: Icon(
-                      Icons.bookmark,
-                      color: mainColor,
-                      size: 22,
-                    ),
-                  ),
-                ),
 
                 InkWell(
                   onTap: () {
@@ -222,22 +208,6 @@ class _MyDrawerState extends State<MyDrawer> {
                   ),
                 ),
 
-                InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    title: MyText(
-                      size: drawerTextSize,
-                      text: 'Change Password',
-                      weight: FontWeight.bold,
-                      align: TextAlign.start,
-                    ),
-                    leading: Icon(
-                      Icons.lock,
-                      color: mainColor,
-                      size: 22,
-                    ),
-                  ),
-                ),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, 'SignIn');

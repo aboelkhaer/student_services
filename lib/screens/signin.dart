@@ -94,7 +94,9 @@ class _SignInState extends State<SignIn> {
                           horizontal: 20,
                         ),
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamed(context, 'PasswordResetScreen');
+                          },
                           child: MyText(
                             text: 'Forgot Password?',
                             color: Colors.grey[700],
