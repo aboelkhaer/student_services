@@ -18,6 +18,11 @@ class _ShowBooksState extends State<ShowBooks> {
         .collection('books')
         .where('userUID', isEqualTo: uid)
         .orderBy('time', descending: true);
+    Query orders = FirebaseFirestore.instance
+        .collection('orders')
+        //TODO create number of booking
+        .where('userUID', isEqualTo: uid)
+        .orderBy('time', descending: true);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mainColor,

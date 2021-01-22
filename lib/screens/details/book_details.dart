@@ -52,7 +52,10 @@ class BookDetails extends StatelessWidget {
                               ],
                             ),
                             child: Image.network(
-                              book.bookImageUrl,
+                              book.bookImageUrl == null ||
+                                      book.bookImageUrl == ''
+                                  ? 'https://i.pinimg.com/236x/c6/e1/ce/c6e1cef909c51f9d4f134c0817ec0c6e.jpg'
+                                  : book.bookImageUrl,
                               fit: BoxFit.cover,
                               errorBuilder: (BuildContext context,
                                   Object exception, StackTrace stackTrace) {
@@ -117,7 +120,7 @@ class BookDetails extends StatelessWidget {
                             height: _size.height * 0.03,
                           ),
                           Text(
-                            'Dr. ${capitalize(book.userLastName)} ${capitalize(book.userLastName)}',
+                            'Dr. ${capitalize(book.userFirstName)} ${capitalize(book.userLastName)}',
                             style: TextStyle(
                               shadows: [
                                 Shadow(
