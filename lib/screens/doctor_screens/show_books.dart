@@ -18,11 +18,7 @@ class _ShowBooksState extends State<ShowBooks> {
         .collection('books')
         .where('userUID', isEqualTo: uid)
         .orderBy('time', descending: true);
-    Query orders = FirebaseFirestore.instance
-        .collection('orders')
-        //TODO create number of booking
-        .where('userUID', isEqualTo: uid)
-        .orderBy('time', descending: true);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mainColor,
@@ -49,8 +45,28 @@ class _ShowBooksState extends State<ShowBooks> {
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
               Book book = Book.fromJson(snapshot.data.docs[index].data());
+
               return ListTile(
                 title: Text(book.title),
+                subtitle: FutureBuilder(
+                  future: totalOrders(book.title),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container();
+                    }
+                    return Row(
+                      children: [
+                        Text('Until now: '),
+                        Text(
+                          '${snapshot.data}',
+                          style: TextStyle(
+                            color: mainColor,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
@@ -63,5 +79,16 @@ class _ShowBooksState extends State<ShowBooks> {
         },
       ),
     );
+  }
+  // Future<String> getBookTitle() {
+
+  // }
+  Future totalOrders(bookTitle) async {
+    var respectsQuery = StudentServicesApp.firebaseFirestore
+        .collection('orders')
+        .where('bookTitle', isEqualTo: bookTitle);
+    var querySnapshot = await respectsQuery.get();
+    var totalEquals = querySnapshot.docs.length;
+    return totalEquals;
   }
 }

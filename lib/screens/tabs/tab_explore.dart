@@ -4,12 +4,7 @@ import 'package:student_services/models/post_model.dart';
 import 'package:student_services/utility/config.dart';
 import 'package:student_services/widgets/posts_body.dart';
 
-class ExploreTab extends StatefulWidget {
-  @override
-  _ExploreTabState createState() => _ExploreTabState();
-}
-
-class _ExploreTabState extends State<ExploreTab> {
+class ExploreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Query myPosts = StudentServicesApp.firebaseFirestore
@@ -18,8 +13,8 @@ class _ExploreTabState extends State<ExploreTab> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      body: StreamBuilder<QuerySnapshot>(
-        stream: myPosts.snapshots(),
+      body: FutureBuilder<QuerySnapshot>(
+        future: myPosts.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -49,11 +44,6 @@ class _ExploreTabState extends State<ExploreTab> {
                   postBody(post, context),
                 ],
               );
-              // DocumentSnapshot myData = snapshot.data.docs[index];
-              // return ListTile(
-              //   title: Text(myData.data()['postTitle']),
-              //   subtitle: Text(myData.data()['postDescription']),
-              // );
             },
           );
         },

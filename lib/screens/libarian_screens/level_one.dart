@@ -13,6 +13,13 @@ class LevelOne extends StatefulWidget {
 class _LevelOneState extends State<LevelOne> {
   @override
   Widget build(BuildContext context) {
+    return LevelOneWidget();
+  }
+}
+
+class LevelOneWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     Query levelOne = StudentServicesApp.firebaseFirestore
         .collection('orders')
         .where('bookLevel', isEqualTo: 'level 1')

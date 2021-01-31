@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:student_services/utility/config.dart';
 
 class Book {
   String title,
@@ -22,6 +23,7 @@ class Book {
     this.userFirstName,
     this.userLastName,
     this.bookImageUrl,
+    this.time,
   });
   Book.fromJson(Map<String, dynamic> json) {
     title = json['title'];
@@ -35,4 +37,24 @@ class Book {
     bookImageUrl = json['bookImageUrl'];
     time = json['time'];
   }
+//    getBookCount() async {
+//     var uid = StudentServicesApp.auth.currentUser.uid;
+
+//     await StudentServicesApp.firebaseFirestore
+//         .collection('orders')
+//         .doc(uid)
+//         .get()
+//         .then((result) {
+//       admin = result['admin'];
+//       id = result['uid'];
+//       firstName = result['firstName'];
+//       lastName = result['lastName'];
+//       phone = result['phone'];
+//       email = result['email'];
+//       lib = result['lib'];
+//       url = result['url'];
+//     });
+//   }
+// }
+
 }

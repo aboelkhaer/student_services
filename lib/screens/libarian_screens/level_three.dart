@@ -5,12 +5,14 @@ import 'package:student_services/utility/config.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/widgets/my_text.dart';
 
-class LevelThree extends StatefulWidget {
+class LevelThree extends StatelessWidget {
   @override
-  _LevelThreeState createState() => _LevelThreeState();
+  Widget build(BuildContext context) {
+    return LevelThreeWidget();
+  }
 }
 
-class _LevelThreeState extends State<LevelThree> {
+class LevelThreeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Query levelThree = StudentServicesApp.firebaseFirestore
@@ -28,8 +30,8 @@ class _LevelThreeState extends State<LevelThree> {
         ),
         centerTitle: true,
       ),
-      body: StreamBuilder(
-        stream: levelThree.snapshots(),
+      body: FutureBuilder(
+        future: levelThree.get(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Something went wrong'));

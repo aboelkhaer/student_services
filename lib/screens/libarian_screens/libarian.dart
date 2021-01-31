@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:student_services/utility/constans.dart';
 import 'package:student_services/widgets/my_text.dart';
 
-class LibarianScreen extends StatefulWidget {
-  @override
-  _LibarianScreenState createState() => _LibarianScreenState();
-}
-
-class _LibarianScreenState extends State<LibarianScreen> {
+class LibarianScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

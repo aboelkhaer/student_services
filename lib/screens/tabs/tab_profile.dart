@@ -83,42 +83,6 @@ class _ProfileTabState extends State<ProfileTab> {
                         ),
                       ],
                     ),
-                    // GestureDetector(
-                    //   onTap: _selectAndPickImage,
-                    //   child: CircleAvatar(
-                    //     backgroundColor: Colors.transparent,
-                    //     backgroundImage:
-                    //         _imageFile == null ? null : FileImage(_imageFile),
-                    //     radius: 50,
-                    //     child: _imageFile == null
-                    //         ? Icon(
-                    //             Icons.add_photo_alternate,
-                    //             size: size.width * 0.15,
-                    //             color: Colors.grey,
-                    //           )
-                    //         : null,
-                    //   ),
-                    // ),
-                    // Container(
-                    //   height: size.height * 0.12,
-                    //   width: size.width,
-                    //   alignment: Alignment.center,
-                    //   child: FutureBuilder(
-                    //       future: myInfo,
-                    //       builder: (context, snapshot) {
-                    //         if (snapshot.connectionState ==
-                    //             ConnectionState.done) {
-                    //           return MyText(
-                    //             text:
-                    //                 '${snapshot.data['firstName'][0].toUpperCase()}${snapshot.data['lastName'][0].toUpperCase()}',
-                    //             size: 45,
-                    //             weight: FontWeight.w700,
-                    //           );
-                    //         } else {
-                    //           return Container();
-                    //         }
-                    //       }),
-                    // ),
                     SizedBox(
                       height: 40,
                     ),

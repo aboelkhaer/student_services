@@ -21,7 +21,7 @@ class PostDetails extends StatelessWidget {
     int timeInMillis = post.time.millisecondsSinceEpoch;
     var date = DateTime.fromMillisecondsSinceEpoch(timeInMillis);
     var formattedDate = DateFormat.yMMMMEEEEd().format(date);
-    Size size = MediaQuery.of(context).size;
+    Size _size = MediaQuery.of(context).size;
     Query myBooks = StudentServicesApp.firebaseFirestore
         .collection('books')
         .where('userUID', isEqualTo: post.userUID)
@@ -29,8 +29,8 @@ class PostDetails extends StatelessWidget {
     return Scaffold(
       backgroundColor: mainColor,
       body: SafeArea(
-        child: StreamBuilder(
-            stream: myPosts.snapshots(),
+        child: FutureBuilder(
+            future: myPosts.get(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(child: Text('Something went wrong'));
@@ -48,9 +48,6 @@ class PostDetails extends StatelessWidget {
                           children: [
                             Container(
                               width: double.infinity,
-                            ),
-                            Container(
-                              width: double.infinity,
                               decoration: BoxDecoration(
                                 color: Color(0xFFF9FaFa),
                                 borderRadius: BorderRadius.only(
@@ -60,7 +57,7 @@ class PostDetails extends StatelessWidget {
                               ),
                               child: Column(
                                 children: [
-                                  _sizedBox(height: size.height * 0.03),
+                                  _sizedBox(height: _size.height * 0.03),
                                   Row(
                                     children: [
                                       IconButton(
@@ -81,7 +78,7 @@ class PostDetails extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  _sizedBox(height: size.height * 0.01),
+                                  _sizedBox(height: _size.height * 0.01),
                                   Container(
                                     width: double.infinity,
                                     child: Image.network(
@@ -94,7 +91,7 @@ class PostDetails extends StatelessWidget {
                                       },
                                     ),
                                   ),
-                                  _sizedBox(height: size.height * 0.03),
+                                  _sizedBox(height: _size.height * 0.03),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 20,
@@ -151,8 +148,8 @@ class PostDetails extends StatelessWidget {
                                           ),
                                         ),
                                         _sizedBox(
-                                            height: size.height * 0.03,
-                                            width: size.width * 0.02),
+                                            height: _size.height * 0.03,
+                                            width: _size.width * 0.02),
                                         Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -174,7 +171,7 @@ class PostDetails extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  _sizedBox(height: size.height * 0.03),
+                                  _sizedBox(height: _size.height * 0.03),
                                   Padding(
                                     padding: EdgeInsets.only(
                                       right: 50,
@@ -191,7 +188,7 @@ class PostDetails extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ),
-                                  _sizedBox(height: size.height * 0.05),
+                                  _sizedBox(height: _size.height * 0.19),
                                   Column(
                                     children: [
                                       Padding(
@@ -216,8 +213,8 @@ class PostDetails extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-                                      StreamBuilder<QuerySnapshot>(
-                                        stream: myBooks.snapshots(),
+                                      FutureBuilder<QuerySnapshot>(
+                                        future: myBooks.get(),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
@@ -237,7 +234,7 @@ class PostDetails extends StatelessWidget {
                                             );
                                           }
                                           return Container(
-                                            height: size.height * 0.3,
+                                            height: _size.height * 0.3,
                                             child: ListView.builder(
                                               shrinkWrap: true,
                                               itemCount:
